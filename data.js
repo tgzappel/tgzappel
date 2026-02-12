@@ -77,11 +77,22 @@ const DATA = {
             location: "Coming soon.", 
             desc: "If the key to success is to do litejumps and spikedges… Lightbulbs might not be invented… …yet…" 
         },
+        { 
+            id: "pop", 
+            name: "Path of Pain", 
+            author: "TheGrassyGuys", 
+            skills: "Kaizo Consistency, General Consistency, Precision", 
+            stats: "Average Enjoyment: 0 - Average Quality: 6 - Skill to Effort Balance: 5", 
+            points: 450, 
+            img: "assets/pop.png", 
+            location: "Coming soon.", 
+            desc: "Suffer." 
+        },
         // Add more levels here...
     ],
     players: [
-        { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts"] },
-        { name: "Krackerz", completions: ["os", "kts"] },
+        { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts", "pop"] },
+        { name: "Krackerz", completions: ["os", "kts", "pop"] },
         { name: "programminguy", completions: ["pmi"] },
         { name: "fireball9746", completions: ["prpac", "kts"] },
         { name: "swskrei", completions: ["kts"] },
