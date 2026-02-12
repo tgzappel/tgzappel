@@ -60,19 +60,33 @@ const DATA = {
             name: "Prismatic Pathways  C-Side", 
             author: "fireball9746", 
             skills: "Routing, Memory, Generic Kaizo", 
-            stats: "Average Enjoyment: 9 - Average Quality: 9 - Skill to Effort Balance:6", 
+            stats: "Average Enjoyment: 9 - Average Quality: 9 - Skill to Effort Balance: 6", 
             points: 600, 
             img: "assets/prpac.png", 
             code: "Coming soon.", 
             desc: "THE PATHWAYS TRULY WERE PRISMATIC🗣️🔥" 
-        }
+        },
+        { 
+            id: "kts", 
+            name: "Key to Success", 
+            author: "Michael Chan", 
+            skills: "Keydoors, Kaizo, Litejumps", 
+            stats: "Average Enjoyment: 8 - Average Quality: 8.5 - Skill to Effort Balance: 4.5", 
+            points: 500, 
+            img: "assets/kts.png", 
+            code: "Coming soon.", 
+            desc: "If the key to success is to do litejumps and spikedges… Lightbulbs might not be invented… …yet…" 
+        },
         // Add more levels here...
     ],
     players: [
-        { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc"] },
-        { name: "Krackerz", completions: ["os"] },
+        { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts"] },
+        { name: "Krackerz", completions: ["os", "kts"] },
         { name: "programminguy", completions: ["pmi"] },
-        { name: "fireball", completions: ["prpac"] }
+        { name: "fireball", completions: ["prpac", "kts"] },
+        { name: "swskrei", completions: ["kts"] },
+        { name: "ThatAppelGuy", completions: ["kts"] },
+        { name: "taliix", completions: ["kts"] }
         // Add more players here...
     ]
 };
