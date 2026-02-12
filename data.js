@@ -9,3 +9,18 @@ const DATA = {
         { name: "AppelPro", completions: ["tic"] }
     ]
 };
+
+function showLevelDetails(levelId) {
+    const lvl = DATA.levels.find(l => l.id === levelId);
+    // Find all players who beat this level
+    const victors = DATA.players.filter(p => p.completions.includes(levelId));
+    
+    const modalContent = `
+        <h2>${lvl.name}</h2>
+        <img src="${lvl.img}" style="width:100%">
+        <p>${lvl.desc}</p>
+        <h3>Victors:</h3>
+        <ul>${victors.map(v => `<li>${v.name}</li>`).join('')}</ul>
+    `;
+    openModal(modalContent);
+}
