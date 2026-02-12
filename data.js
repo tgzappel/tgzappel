@@ -97,7 +97,7 @@ const DATA = {
             points: 425, 
             img: "assets/aic.png", 
             location: "Coming soon.", 
-            desc: "Suffer." 
+            desc: "Claustrophobia, then Nyctophobia. Now introducing: Aichmophobia." 
         },
         // Add more levels here...
     ],
