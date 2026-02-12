@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Grandmaster Zone | Levels</title>
+    <title>The List | Levels</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,118 +12,75 @@
         <a href="leaderboard.html">LEADERBOARD</a>
     </nav>
 
-    <div id="container">
-        <h1>THE LIST</h1>
-        
-        <div class="search-container">
-            <input type="text" id="searchBar" placeholder="Search by level, author, verifier, or skill (e.g. Precision)..." onkeyup="filterLevels()">
-        </div>
+    <div id="main-layout">
+        <aside id="sidebar">
+            <h3>Filter Skills</h3>
+            <div id="tag-filters">
+                <button class="tag-btn" onclick="toggleTag('Precision')">Precision</button>
+                <button class="tag-btn" onclick="toggleTag('Speedrun')">Speedrun</button>
+                <button class="tag-btn" onclick="toggleTag('Memory')">Memory</button>
+                <button class="tag-btn" onclick="toggleTag('Timing')">Timing</button>
+            </div>
+            <button id="clear-btn" onclick="clearFilters()">Clear Filters</button>
+        </aside>
 
-        <div id="list-view">
-            <p style="text-align:center; color:#888;">Loading levels from spreadsheet...</p>
-        </div>
+        <main id="container">
+            <input type="text" id="searchBar" placeholder="Search level, author, or verifier..." onkeyup="filterLevels()">
+            <div id="list-view"></div>
+        </main>
     </div>
 
-    <div id="infoModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <div id="modal-body"></div>
-        </div>
-    </div>
+    <div id="infoModal" class="modal"><div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="modal-body"></div>
+    </div></div>
 
-    <script src="./data.js"></script>
+    <script src="data.js"></script>
     <script>
-        function renderLevels(filter = "") {
-            const listView = document.getElementById('list-view');
-            const f = filter.toLowerCase();
-
-            if (!window.DATA || !window.DATA.levels) return;
-
-            // Universal filtering logic
-            const filtered = DATA.levels.filter(lvl => 
-                lvl.name.toLowerCase().includes(f) || 
-                lvl.author.toLowerCase().includes(f) ||
-                lvl.verifier.toLowerCase().includes(f) ||
-                lvl.skills.toLowerCase().includes(f)
-            );
-
-            if (filtered.length === 0) {
-                listView.innerHTML = `<p style="text-align:center; color:#888; margin-top:20px;">No levels found matching "${filter}"</p>`;
-                return;
-            }
-
-            listView.innerHTML = filtered.map((lvl) => {
-                const originalIndex = DATA.levels.findIndex(l => l.id === lvl.id);
-                return `
-                <div class="card" onclick="showLevelDetails('${lvl.id}')">
-                    <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/240x180?text=No+Image'">
-                    <div class="info">
-                        <h2>#${originalIndex + 1} - ${lvl.name}</h2>
-                        <p style="color:var(--gold); font-size:0.85em; margin: 4px 0;">Verified by ${lvl.verifier}</p>
-                        <p style="font-size:0.9em; opacity:0.8;">${lvl.points} Points</p>
-                    </div>
-                </div>`;
-            }).join('');
+        let activeTags = [];
+        function toggleTag(tag) {
+            const btn = event.target;
+            activeTags.includes(tag) ? activeTags = activeTags.filter(t => t !== tag) : activeTags.push(tag);
+            btn.classList.toggle('active-tag');
+            filterLevels();
         }
-
+        function clearFilters() {
+            activeTags = [];
+            document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active-tag'));
+            document.getElementById('searchBar').value = "";
+            filterLevels();
+        }
         function filterLevels() {
-            renderLevels(document.getElementById('searchBar').value);
+            const search = document.getElementById('searchBar').value.toLowerCase();
+            const filtered = DATA.levels.filter(lvl => {
+                const matchesSearch = lvl.name.toLowerCase().includes(search) || lvl.author.toLowerCase().includes(search);
+                const matchesTags = activeTags.length === 0 || activeTags.every(t => lvl.skills.includes(t));
+                return matchesSearch && matchesTags;
+            });
+            document.getElementById('list-view').innerHTML = filtered.map(lvl => `
+                <div class="card" onclick="showLevelDetails('${lvl.id}')">
+                    <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/300x200'">
+                    <div class="info"><h2>${lvl.name}</h2><p>By ${lvl.author}</p></div>
+                </div>`).join('');
         }
-
+        function renderLevels() { filterLevels(); }
         function showLevelDetails(id) {
             const lvl = DATA.levels.find(l => l.id === id);
             const victors = DATA.players.filter(p => p.completions.includes(id));
-            
-            const content = `
-                <h2 style="color:var(--accent); margin-bottom:0;">${lvl.name}</h2>
-                <p style="color:#888; margin-bottom:15px;">by ${lvl.author}</p>
-                
-                <div style="background:#1a1a1a; padding:12px; border-radius:8px; border-left:4px solid var(--gold); margin-bottom:20px;">
-                    <span style="text-transform:uppercase; font-size:0.7em; color:var(--gold); letter-spacing:1px; font-weight:bold;">First Proof / Verified By</span><br>
-                    <span style="font-size:1.1em; font-weight:bold;">${lvl.verifier}</span>
+            document.getElementById('modal-body').innerHTML = `
+                <h2>${lvl.name}</h2><p>by ${lvl.author}</p>
+                <div class="stat-grid">
+                    <div><span>ENJOYMENT</span><strong>${lvl.enjoyment}</strong></div>
+                    <div><span>RATIO</span><strong>${lvl.ratio}</strong></div>
+                    <div><span>QUALITY</span><strong>${lvl.quality}</strong></div>
                 </div>
-
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:20px; text-align:center;">
-                    <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #333;">
-                        <span style="font-size:0.65em; color:#888; display:block; margin-bottom:5px;">ENJOYMENT</span>
-                        <span style="font-weight:bold; color:#0f0;">${lvl.enjoyment}</span>
-                    </div>
-                    <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #333;">
-                        <span style="font-size:0.65em; color:#888; display:block; margin-bottom:5px;">SKILL/EFFORT</span>
-                        <span style="font-weight:bold; color:#0af;">${lvl.ratio}</span>
-                    </div>
-                    <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #333;">
-                        <span style="font-size:0.65em; color:#888; display:block; margin-bottom:5px;">QUALITY</span>
-                        <span style="font-weight:bold; color:var(--gold);">${lvl.quality}</span>
-                    </div>
-                </div>
-
-                <img src="${lvl.img}" style="width:100%; border-radius:8px; margin-bottom:15px;" onerror="this.src='https://via.placeholder.com/600x400?text=Image+Missing'">
-                
-                <div style="background:#000; padding:15px; border-radius:8px; border:1px solid #333; font-size:0.9em;">
-                    <p style="margin: 0 0 10px 0;"><strong>Skills Required:</strong> <span style="color:var(--accent);">${lvl.skills}</span></p>
-                    <div style="display:flex; justify-content:space-between; border-top: 1px solid #222; pt:10px; margin-top:10px;">
-                        <span><strong>Location:</strong> <code style="color:#0f0;">${lvl.location}</code></span>
-                        <span><strong>Points:</strong> ${lvl.points}</span>
-                    </div>
-                </div>
-                
-                <p style="font-style:italic; color:#ccc; margin-top:15px; line-height:1.5; font-size:0.95em;">"${lvl.desc}"</p>
-                
-                <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-                
-                <h3 style="color:var(--accent); margin-bottom:10px;">Victors (${victors.length})</h3>
-                <ul style="max-height:120px; overflow-y:auto; list-style:square; padding-left:20px; color:#ddd;">
-                    ${victors.length > 0 ? victors.map(v => `<li style="margin-bottom:5px;">${v.name}</li>`).join('') : '<li>No victors recorded yet.</li>'}
-                </ul>
-            `;
-            
-            document.getElementById('modal-body').innerHTML = content;
+                <p><strong>Verified by:</strong> ${lvl.verifier}</p>
+                <p><strong>Skills:</strong> ${lvl.skills}</p>
+                <hr><h3>Victors (${victors.length})</h3>
+                <ul>${victors.map(v => `<li>${v.name}</li>`).join('')}</ul>`;
             document.getElementById('infoModal').style.display = "block";
         }
-
         function closeModal() { document.getElementById('infoModal').style.display = "none"; }
-        window.onclick = function(e) { if(e.target == document.getElementById('infoModal')) closeModal(); }
     </script>
 </body>
 </html>
