@@ -8,7 +8,7 @@ const DATA = {
             stats: "Average Enjoyment: 9 - Average Quality: 8 - Skill to Effort Balance: 3", 
             points: 2000, 
             img: "assets/atsc.png", 
-            code: "Coming soon.", 
+            location: "Coming soon.", 
             desc: "The final challenge of Crystalline Peaks." 
         },
         { 
@@ -19,7 +19,7 @@ const DATA = {
             stats: "Average Enjoyment: 1 - Average Quality: 5 - Skill to Effort Balance: 7", 
             points: 1750, 
             img: "assets/tic.png", 
-            code: "Coming soon.", 
+            location: "Coming soon.", 
             desc: "Fiery tendrils of suffering swiftly embrace, only to be vanquished in the blink of an eye." 
         },
         { 
@@ -30,7 +30,7 @@ const DATA = {
             stats: "N/A", 
             points: 1000, 
             img: "assets/os.png", 
-            code: "Coming soon.", 
+            location: "Coming soon.", 
             desc: "Was an Aimed Top 1, but wasn't verified in time. Still insane." 
         },
         { 
@@ -41,7 +41,7 @@ const DATA = {
             stats: "N/A", 
             points: 900, 
             img: "assets/pmi.png", 
-            code: "Coming soon.", 
+            location: "Coming soon.", 
             desc: "2 minute speedrun." 
         },
         { 
@@ -52,7 +52,7 @@ const DATA = {
             stats: "Average Enjoyment: 5 - Average Quality: 6 - Skill to Effort Balance: 5", 
             points: 750, 
             img: "assets/ssc.png", 
-            code: "Coming soon.", 
+            location: "Coming soon.", 
             desc: "The next big difficulty jump. From here it only gets worse. Good Luck!" 
         },
         { 
@@ -63,7 +63,7 @@ const DATA = {
             stats: "Average Enjoyment: 9 - Average Quality: 9 - Skill to Effort Balance: 6", 
             points: 600, 
             img: "assets/prpac.png", 
-            code: "Coming soon.", 
+            location: "Coming soon.", 
             desc: "THE PATHWAYS TRULY WERE PRISMATIC🗣️🔥" 
         },
         { 
@@ -74,7 +74,7 @@ const DATA = {
             stats: "Average Enjoyment: 8 - Average Quality: 8.5 - Skill to Effort Balance: 4.5", 
             points: 500, 
             img: "assets/kts.png", 
-            code: "Coming soon.", 
+            location: "Coming soon.", 
             desc: "If the key to success is to do litejumps and spikedges… Lightbulbs might not be invented… …yet…" 
         },
         // Add more levels here...
