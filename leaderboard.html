@@ -2,74 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The Grandmaster Zone | Leaderboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard | Grandmaster List</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav><a href="index.html">LEVEL LIST</a><a href="leaderboard.html">LEADERBOARD</a></nav>
+    <nav>
+        <a href="index.html">LEVELS</a>
+        <a href="leaderboard.html" class="active">LEADERBOARD</a>
+    </nav>
+
     <div id="container">
         <h1>TOP PLAYERS</h1>
-        <div class="search-container">
-            <input type="text" id="searchBar" placeholder="Search players..." onkeyup="filterPlayers()">
-        </div>
-        <div id="leaderboard-view"></div>
+        
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th>Completions</th>
+                    <th>Total Points</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                </tbody>
+        </table>
     </div>
-    <div id="infoModal" class="modal"><div class="modal-content">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-        <div id="modal-body"></div>
-    </div></div>
 
-    <script src="data.js"></script>
+    <script src="./data.js"></script>
+
     <script>
         let leaderboard = [];
 
         function calculateLeaderboard() {
-            leaderboard = DATA.players.map(p => {
-                let total = 0;
-                p.completions.forEach(id => {
-                    const lvl = DATA.levels.find(l => l.id === id);
-                    if (lvl) total += lvl.points;
+            if (!window.DATA || !window.DATA.players || !window.DATA.levels) return;
+
+            // Map players to their total scores
+            leaderboard = DATA.players.map(player => {
+                let totalPoints = 0;
+                
+                player.completions.forEach(id => {
+                    // Finds the level by ID and adds its points (Column I / Index 8)
+                    const level = DATA.levels.find(l => l.id.toLowerCase() === id.toLowerCase());
+                    if (level) {
+                        totalPoints += level.points;
+                    }
                 });
-                return { ...p, total };
-            }).sort((a, b) => b.total - a.total);
-        }
 
-        function renderLeaderboard(filter = "") {
-            const view = document.getElementById('leaderboard-view');
-            const filtered = leaderboard.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
-
-            view.innerHTML = filtered.map((p, i) => `
-                <div class="player-row" onclick="showPlayerDetails('${p.name}')">
-                    <span style="font-weight:bold">#${i + 1} &nbsp; ${p.name}</span>
-                    <span class="score">${p.total} pts</span>
-                </div>`).join('');
-        }
-
-        function filterPlayers() {
-            const query = document.getElementById('searchBar').value;
-            renderLeaderboard(query);
-        }
-
-        function showPlayerDetails(name) {
-            const p = leaderboard.find(player => player.name === name);
-            const beaten = p.completions.map(id => {
-                const found = DATA.levels.find(l => l.id === id);
-                return found ? found.name : "Unknown Level";
+                return {
+                    name: player.name,
+                    count: player.completions.length,
+                    points: totalPoints
+                };
             });
-            const content = `
-                <h2 style="color:var(--gold); margin-bottom:10px;">${p.name}</h2>
-                <p><strong>Total Points:</strong> ${p.total}</p>
-                <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-                <h3>Completions (${beaten.length}):</h3>
-                <ul style="max-height:300px; overflow-y:auto;">${beaten.map(l => `<li>${l}</li>`).join('')}</ul>`;
-            openModal(content);
+
+            // Sort: highest points first
+            leaderboard.sort((a, b) => b.points - a.points);
+            renderLeaderboard();
         }
 
-        function openModal(c) { document.getElementById('modal-body').innerHTML = c; document.getElementById('infoModal').style.display = "block"; }
-        function closeModal() { document.getElementById('infoModal').style.display = "none"; }
+        function renderLeaderboard() {
+            const lbBody = document.getElementById('leaderboard-body');
+            if (!lbBody) return;
 
-        calculateLeaderboard();
-        renderLeaderboard();
+            if (leaderboard.length === 0) {
+                lbBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px;">No players found.</td></tr>`;
+                return;
+            }
+
+            lbBody.innerHTML = leaderboard.map((player, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${player.name}</strong></td>
+                    <td>${player.count}</td>
+                    <td style="color:var(--gold); font-weight:bold;">${player.points.toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        // The data.js script calls calculateLeaderboard() automatically once the CSVs load!
     </script>
 </body>
 </html>
