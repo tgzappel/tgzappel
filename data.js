@@ -124,8 +124,8 @@ const DATA = {
         // Add more levels here...
     ],
     players: [
-        { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts", "pop"] },
-        { name: "Krackerz", completions: ["os", "kts", "pop", "aic", "agr"] },
+        { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts", "pop", "ff"] },
+        { name: "Krackerz", completions: ["os", "kts", "pop", "aic", "agr", "ff"] },
         { name: "programminguy", completions: ["pmi"] },
         { name: "fireball9746", completions: ["prpac", "kts"] },
         { name: "swskrei", completions: ["kts"] },
