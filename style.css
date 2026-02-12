@@ -6,30 +6,128 @@
     --text: #ffffff;
 }
 
-body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; }
-nav { background: #000; padding: 20px; text-align: center; border-bottom: 2px solid var(--accent); }
-nav a { color: white; margin: 0 20px; text-decoration: none; font-weight: bold; font-size: 1.1em; }
+body { 
+    background: var(--bg); 
+    color: var(--text); 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    margin: 0; 
+}
+
+nav { 
+    background: #000; 
+    padding: 20px; 
+    text-align: center; 
+    border-bottom: 2px solid var(--accent); 
+}
+
+nav a { 
+    color: white; 
+    margin: 0 20px; 
+    text-decoration: none; 
+    font-weight: bold; 
+    font-size: 1.1em; 
+}
+
 nav a:hover { color: var(--accent); }
 
-#container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
-h1 { text-align: center; letter-spacing: 2px; }
-
-.card, .player-row { 
-    background: var(--card-bg); border-radius: 8px; border: 1px solid #222; 
-    margin-bottom: 12px; transition: 0.2s; cursor: pointer;
+#container { 
+    max-width: 1000px; 
+    margin: 20px auto; 
+    padding: 0 20px; 
 }
-.card:hover, .player-row:hover { border-color: var(--accent); transform: scale(1.01); }
 
-.card { display: flex; overflow: hidden; height: 120px; }
-.card img { width: 220px; object-fit: cover; background: #222; }
-.info { padding: 15px; display: flex; flex-direction: column; justify-content: center; }
+h1 { text-align: center; letter-spacing: 2px; text-transform: uppercase; }
 
-.player-row { display: flex; justify-content: space-between; padding: 20px; align-items: center; }
-.score { color: var(--gold); font-weight: bold; font-family: monospace; font-size: 1.2em; }
+/* --- BIGGER LEVEL CARDS --- */
+.card { 
+    display: flex; 
+    background: var(--card-bg); 
+    border-radius: 12px; 
+    border: 1px solid #222; 
+    margin-bottom: 15px; 
+    transition: 0.2s; 
+    cursor: pointer;
+    overflow: hidden; 
+    height: 180px; /* Increased height to show more detail */
+}
 
-/* Modal Styling */
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-.modal-content { background: #1a1a1a; margin: 10% auto; padding: 30px; border: 1px solid var(--accent); width: 80%; max-width: 500px; border-radius: 12px; position: relative; }
-.close-btn { position: absolute; right: 20px; top: 10px; font-size: 28px; cursor: pointer; color: var(--accent); }
+.card:hover { 
+    border-color: var(--accent); 
+    transform: translateY(-2px); 
+    box-shadow: 0 5px 15px rgba(255, 70, 85, 0.2);
+}
+
+.card img { 
+    width: 320px; /* Wider image area */
+    height: 100%;
+    object-fit: contain; /* Shows the WHOLE image without cropping */
+    background: #000; /* Fills empty space if the screenshot isn't 16:9 */
+    border-right: 1px solid #222;
+}
+
+.info { 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+}
+
+.info h2 { margin: 0 0 10px 0; font-size: 1.5em; }
+.info p { color: #aaa; margin: 0; font-size: 1.1em; }
+
+/* --- PLAYER ROWS --- */
+.player-row { 
+    background: var(--card-bg); 
+    padding: 20px; 
+    margin-bottom: 8px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-radius: 8px;
+    border: 1px solid #222;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.player-row:hover { border-color: var(--accent); background: #1c1c1c; }
+.score { color: var(--gold); font-weight: bold; font-family: monospace; font-size: 1.3em; }
+
+/* --- MODAL (POPUPS) --- */
+.modal { 
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.95); 
+}
+
+.modal-content { 
+    background: #1a1a1a; 
+    margin: 5% auto; 
+    padding: 30px; 
+    border: 1px solid var(--accent); 
+    width: 90%; 
+    max-width: 600px; 
+    border-radius: 15px; 
+    position: relative; 
+}
+
+.close-btn { 
+    position: absolute; 
+    right: 20px; 
+    top: 10px; 
+    font-size: 32px; 
+    cursor: pointer; 
+    color: var(--accent); 
+}
+
+.modal img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
 ul { list-style: none; padding: 0; }
-li { padding: 8px 0; border-bottom: 1px solid #333; }
+li { padding: 10px 0; border-bottom: 1px solid #333; font-size: 1.1em; }
