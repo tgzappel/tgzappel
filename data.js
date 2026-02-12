@@ -4,15 +4,15 @@ const DATA = {
             id: "atsc", 
             name: "Among the Stars C-Side", 
             points: 2000, 
-            img: "images/Atsc.jpg", 
+            img: "assests/atsc.png", 
             code: "123-456-789", 
-            desc: "The current #1 hardest level." 
+            desc: "The final challenge of Crystalline Peaks." 
         },
         { 
             id: "tic", 
             name: "The Instant Cheeseless", 
             points: 1750, 
-            img: "images/Tic.jpg", 
+            img: "assets/tic.png", 
             code: "987-654-321", 
             desc: "Extremely tight jumps and high speed." 
         }
