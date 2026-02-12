@@ -2,11 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Grandmaster Zone | List</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav><a href="index.html">Levels</a><a href="leaderboard.html">Leaderboard</a></nav>
+    <nav>
+        <a href="index.html">Levels</a>
+        <a href="leaderboard.html">Leaderboard</a>
+    </nav>
+
     <div id="container">
         <h1>The List</h1>
         <div class="search-container">
@@ -14,25 +19,38 @@
         </div>
         <div id="list-view"></div>
     </div>
-    <div id="infoModal" class="modal"><div class="modal-content">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-        <div id="modal-body"></div>
-    </div></div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
 
     <script src="data.js"></script>
     <script>
+        // Check if data.js loaded correctly
+        if (typeof DATA === 'undefined') {
+            console.error("Data.js failed to load. Check file name and path.");
+            document.getElementById('list-view').innerHTML = "<p style='text-align:center;'>Error: Could not load data. Check console (F12).</p>";
+        }
+
         function renderLevels(filter = "") {
             const listView = document.getElementById('list-view');
+            if (!listView) return;
+
             const filtered = DATA.levels.filter(lvl => 
                 lvl.name.toLowerCase().includes(filter.toLowerCase()) || 
                 lvl.author.toLowerCase().includes(filter.toLowerCase())
             );
 
             listView.innerHTML = filtered.map((lvl) => {
+                // Finds the rank based on original position in data.js
                 const originalIndex = DATA.levels.findIndex(l => l.id === lvl.id);
+                
                 return `
                 <div class="card" onclick="showLevelDetails('${lvl.id}')">
-                    <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/240x180?text=Missing+PNG'">
+                    <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/240x180?text=No+Image'">
                     <div class="info">
                         <h2>#${originalIndex + 1} - ${lvl.name}</h2>
                         <p>${lvl.points} Points</p>
@@ -49,27 +67,40 @@
         function showLevelDetails(id) {
             const lvl = DATA.levels.find(l => l.id === id);
             const victors = DATA.players.filter(p => p.completions.includes(id));
+            
             const content = `
                 <h2 style="color:var(--accent); margin-bottom:0;">${lvl.name}</h2>
                 <p style="color:#888; margin-top:5px;">by ${lvl.author}</p>
-                <img src="${lvl.img}" style="width:100%; border-radius:8px; margin: 15px 0;">
+                <img src="${lvl.img}" style="width:100%; border-radius:8px; margin: 15px 0;" onerror="this.src='https://via.placeholder.com/600x400?text=No+Preview'">
+                
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:#000; padding:15px; border-radius:8px; border:1px solid #333; font-size:0.9em;">
-                    <span><strong>Skills:</strong> ${lvl.skills}</span>
-                    <span><strong>Stats:</strong> ${lvl.stats}</span>
-                    <span><strong>Location:</strong> <location>${lvl.location}</location></span>
+                    <span><strong>Skills:</strong> ${lvl.skills || 'N/A'}</span>
+                    <span><strong>Stats:</strong> ${lvl.stats || 'N/A'}</span>
+                    <span><strong>Location:</strong> <code style="color:#0f0;">${lvl.location || 'N/A'}</code></span>
                     <span><strong>Points:</strong> ${lvl.points}</span>
                 </div>
+                
                 <p style="font-style:italic; color:#ccc; margin-top:15px;">${lvl.desc}</p>
                 <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
                 <h3>Victors (${victors.length})</h3>
-                <ul style="max-height:150px; overflow-y:auto;">${victors.map(v => `<li>${v.name}</li>`).join('')}</ul>`;
+                <ul style="max-height:150px; overflow-y:auto; padding-left:20px; list-style:square;">
+                    ${victors.length > 0 ? victors.map(v => `<li>${v.name}</li>`).join('') : '<li>No completions yet.</li>'}
+                </ul>`;
+            
             openModal(content);
         }
 
-        function openModal(c) { document.getElementById('modal-body').innerHTML = c; document.getElementById('infoModal').style.display = "block"; }
-        function closeModal() { document.getElementById('infoModal').style.display = "none"; }
-        
-        renderLevels(); // Initial load
-    </script>
-</body>
-</html>
+        function openModal(c) { 
+            document.getElementById('modal-body').innerHTML = c; 
+            document.getElementById('infoModal').style.display = "block"; 
+            document.body.style.overflow = "hidden"; // Prevent background scrolling
+        }
+
+        function closeModal() { 
+            document.getElementById('infoModal').style.display = "none"; 
+            document.body.style.overflow = "auto"; 
+        }
+
+        // Close modal if user clicks outside of the box
+        window.onclick = function(event) {
+            const modal = document.getElementById('infoModal');
