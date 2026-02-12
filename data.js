@@ -4,23 +4,23 @@ const DATA = {
             id: "atsc", 
             name: "Among the Stars C-Side", 
             author: "TheGrassyGuys", 
-            skills: "Timing, Precision", 
-            stats: "12 CPS", 
+            skills: "Sidejump Tech, Keydoor, Crumbleblock, Crushers",             
+            stats: "Average Enjoyment: 9 - Average Quality: 8 - Skill to Effort Balance: 3", 
             points: 2000, 
             img: "assets/atsc.png", 
-            code: "123-456", 
+            code: "Coming soon.", 
             desc: "The final challenge of Crystalline Peaks." 
         },
         { 
             id: "tic", 
             name: "The Instant Cheeseless", 
             author: "Michael Chan", 
-            skills: "Speed, Memory", 
+            skills: "Crushers, Consistency, Willpower", 
             stats: "Average Enjoyment: 1 - Average Quality: 5 - Skill to Effort Balance: 7", 
             points: 1750, 
             img: "assets/tic.png", 
-            code: "987-654", 
-            desc: "A fast-paced level with zero room for error." 
+            code: "Coming soon.", 
+            desc: "Fiery tendrils of suffering swiftly embrace, only to be vanquished in the blink of an eye." 
         }
         // Add more levels here...
     ],
