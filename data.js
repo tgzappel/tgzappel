@@ -54,13 +54,25 @@ const DATA = {
             img: "assets/ssc.png", 
             code: "Coming soon.", 
             desc: "The next big difficulty jump. From here it only gets worse. Good Luck!" 
+        },
+        { 
+            id: "prpac", 
+            name: "Prismatic Pathways  C-Side", 
+            author: "fireball9746", 
+            skills: "Routing, Memory, Generic Kaizo", 
+            stats: "ugh ill do it later", 
+            points: 600, 
+            img: "assets/prpac.png", 
+            code: "Coming soon.", 
+            desc: "THE PATHWAYS TRULY WERE PRISMATIC🗣️🔥" 
         }
         // Add more levels here...
     ],
     players: [
         { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc"] },
         { name: "Krackerz", completions: ["os"] },
-        { name: "programminguy", completions: ["pmi"] }
+        { name: "programminguy", completions: ["pmi"] },
+        { name: "fireball", completions: ["prpac"] }
         // Add more players here...
     ]
 };
