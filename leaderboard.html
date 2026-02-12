@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard</title>
+    <title>Leaderboard | Rankings</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,8 +13,10 @@
     </nav>
 
     <div id="container" style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
-        <h1 style="text-align:center; margin-bottom:30px;">Top Players</h1>
-        <input type="text" id="pSearch" placeholder="Search for a player..." onkeyup="renderLeaderboard()">
+        <h1 style="text-align:center; font-size:2.5rem; margin-bottom:30px;">Top Players</h1>
+        <div class="search-box">
+            <input type="text" id="pSearch" placeholder="Search for a player..." onkeyup="renderLeaderboard()">
+        </div>
         <div id="leaderboard-list"></div>
     </div>
 
@@ -44,7 +46,7 @@
                         <span class="level-name">${p.name}</span>
                         <span class="level-meta">${p.count} levels completed</span>
                     </div>
-                    <div class="level-points" style="font-size:1.1rem">${p.points.toLocaleString()} pts</div>
+                    <div class="level-points" style="font-size:1.15rem">${p.points.toLocaleString()} pts</div>
                 </div>`).join('');
         }
     </script>
