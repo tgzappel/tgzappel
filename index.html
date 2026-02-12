@@ -36,8 +36,7 @@
     <div id="infoModal" class="modal">
         <div class="modal-content">
             <span onclick="closeModal()" style="position:absolute; right:20px; top:15px; cursor:pointer; font-size:24px; color:#ccc;">&times;</span>
-            <div id="modal-body">
-                </div>
+            <div id="modal-body"></div>
         </div>
     </div>
 
@@ -45,7 +44,6 @@
     <script>
         let activeTags = [];
 
-        // This runs when data.js finishes loading your spreadsheet
         function renderLevels() { filterLevels(); }
 
         function toggleTag(tag) {
@@ -54,7 +52,6 @@
             filterLevels();
         }
 
-        // This fills the MAIN LIST
         function filterLevels() {
             const search = document.getElementById('searchBar').value.toLowerCase();
             if (!window.DATA || !window.DATA.levels) return;
@@ -77,15 +74,15 @@
                 </div>`).join('');
         }
 
-        // This fills the POP-UP (Modal) when you click a level
         function showLevelDetails(id) {
             const lvl = DATA.levels.find(l => l.id === id);
             const victors = DATA.players.filter(p => p.completions.includes(id));
             
-            // We are "writing" the HTML inside the modal-body here
             document.getElementById('modal-body').innerHTML = `
-                <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image+Available'" 
-                     style="width:100%; height:250px; object-fit:cover; border-radius:15px; margin-bottom:20px; border:1px solid #eee;">
+                <div style="width:100%; aspect-ratio: 4 / 3; overflow:hidden; border-radius:15px; margin-bottom:20px; border:1px solid #eee;">
+                    <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image+Available'" 
+                         style="width:100%; height:100%; object-fit:cover;">
+                </div>
                 
                 <h2 style="margin:0 0 5px 0;">${lvl.name}</h2>
                 <p style="color:var(--text-muted); margin-bottom:15px;">By ${lvl.author}</p>
