@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Grandmaster Zone | List</title>
+    <title>The Grandmaster Zone | Levels</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav>
-        <a href="index.html">Levels</a>
-        <a href="leaderboard.html">Leaderboard</a>
+        <a href="index.html" class="active">LEVELS</a>
+        <a href="leaderboard.html">LEADERBOARD</a>
     </nav>
 
     <div id="container">
-        <h1>The List</h1>
+        <h1>THE LIST</h1>
+        
         <div class="search-container">
-            <input type="text" id="searchBar" placeholder="Search levels or authors..." onkeyup="filterLevels()">
+            <input type="text" id="searchBar" placeholder="Search by level, author, verifier, or skill (e.g. Precision)..." onkeyup="filterLevels()">
         </div>
-        <div id="list-view"></div>
+
+        <div id="list-view">
+            <p style="text-align:center; color:#888;">Loading levels from spreadsheet...</p>
+        </div>
     </div>
 
     <div id="infoModal" class="modal">
@@ -27,41 +31,43 @@
         </div>
     </div>
 
-    <script src="data.js"></script>
+    <script src="./data.js"></script>
     <script>
-        // Check if data.js loaded correctly
-        if (typeof DATA === 'undefined') {
-            console.error("Data.js failed to load. Check file name and path.");
-            document.getElementById('list-view').innerHTML = "<p style='text-align:center;'>Error: Could not load data. Check console (F12).</p>";
-        }
-
         function renderLevels(filter = "") {
             const listView = document.getElementById('list-view');
-            if (!listView) return;
+            const f = filter.toLowerCase();
 
+            if (!window.DATA || !window.DATA.levels) return;
+
+            // Universal filtering logic
             const filtered = DATA.levels.filter(lvl => 
-                lvl.name.toLowerCase().includes(filter.toLowerCase()) || 
-                lvl.author.toLowerCase().includes(filter.toLowerCase())
+                lvl.name.toLowerCase().includes(f) || 
+                lvl.author.toLowerCase().includes(f) ||
+                lvl.verifier.toLowerCase().includes(f) ||
+                lvl.skills.toLowerCase().includes(f)
             );
 
+            if (filtered.length === 0) {
+                listView.innerHTML = `<p style="text-align:center; color:#888; margin-top:20px;">No levels found matching "${filter}"</p>`;
+                return;
+            }
+
             listView.innerHTML = filtered.map((lvl) => {
-                // Finds the rank based on original position in data.js
                 const originalIndex = DATA.levels.findIndex(l => l.id === lvl.id);
-                
                 return `
                 <div class="card" onclick="showLevelDetails('${lvl.id}')">
                     <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/240x180?text=No+Image'">
                     <div class="info">
                         <h2>#${originalIndex + 1} - ${lvl.name}</h2>
-                        <p>${lvl.points} Points</p>
+                        <p style="color:var(--gold); font-size:0.85em; margin: 4px 0;">Verified by ${lvl.verifier}</p>
+                        <p style="font-size:0.9em; opacity:0.8;">${lvl.points} Points</p>
                     </div>
                 </div>`;
             }).join('');
         }
 
         function filterLevels() {
-            const query = document.getElementById('searchBar').value;
-            renderLevels(query);
+            renderLevels(document.getElementById('searchBar').value);
         }
 
         function showLevelDetails(id) {
@@ -70,37 +76,54 @@
             
             const content = `
                 <h2 style="color:var(--accent); margin-bottom:0;">${lvl.name}</h2>
-                <p style="color:#888; margin-top:5px;">by ${lvl.author}</p>
-                <img src="${lvl.img}" style="width:100%; border-radius:8px; margin: 15px 0;" onerror="this.src='https://via.placeholder.com/600x400?text=No+Preview'">
+                <p style="color:#888; margin-bottom:15px;">by ${lvl.author}</p>
                 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:#000; padding:15px; border-radius:8px; border:1px solid #333; font-size:0.9em;">
-                    <span><strong>Skills:</strong> ${lvl.skills || 'N/A'}</span>
-                    <span><strong>Stats:</strong> ${lvl.stats || 'N/A'}</span>
-                    <span><strong>Location:</strong> <code style="color:#0f0;">${lvl.location || 'N/A'}</code></span>
-                    <span><strong>Points:</strong> ${lvl.points}</span>
+                <div style="background:#1a1a1a; padding:12px; border-radius:8px; border-left:4px solid var(--gold); margin-bottom:20px;">
+                    <span style="text-transform:uppercase; font-size:0.7em; color:var(--gold); letter-spacing:1px; font-weight:bold;">First Proof / Verified By</span><br>
+                    <span style="font-size:1.1em; font-weight:bold;">${lvl.verifier}</span>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:20px; text-align:center;">
+                    <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #333;">
+                        <span style="font-size:0.65em; color:#888; display:block; margin-bottom:5px;">ENJOYMENT</span>
+                        <span style="font-weight:bold; color:#0f0;">${lvl.enjoyment}</span>
+                    </div>
+                    <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #333;">
+                        <span style="font-size:0.65em; color:#888; display:block; margin-bottom:5px;">SKILL/EFFORT</span>
+                        <span style="font-weight:bold; color:#0af;">${lvl.ratio}</span>
+                    </div>
+                    <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #333;">
+                        <span style="font-size:0.65em; color:#888; display:block; margin-bottom:5px;">QUALITY</span>
+                        <span style="font-weight:bold; color:var(--gold);">${lvl.quality}</span>
+                    </div>
+                </div>
+
+                <img src="${lvl.img}" style="width:100%; border-radius:8px; margin-bottom:15px;" onerror="this.src='https://via.placeholder.com/600x400?text=Image+Missing'">
+                
+                <div style="background:#000; padding:15px; border-radius:8px; border:1px solid #333; font-size:0.9em;">
+                    <p style="margin: 0 0 10px 0;"><strong>Skills Required:</strong> <span style="color:var(--accent);">${lvl.skills}</span></p>
+                    <div style="display:flex; justify-content:space-between; border-top: 1px solid #222; pt:10px; margin-top:10px;">
+                        <span><strong>Location:</strong> <code style="color:#0f0;">${lvl.location}</code></span>
+                        <span><strong>Points:</strong> ${lvl.points}</span>
+                    </div>
                 </div>
                 
-                <p style="font-style:italic; color:#ccc; margin-top:15px;">${lvl.desc}</p>
+                <p style="font-style:italic; color:#ccc; margin-top:15px; line-height:1.5; font-size:0.95em;">"${lvl.desc}"</p>
+                
                 <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-                <h3>Victors (${victors.length})</h3>
-                <ul style="max-height:150px; overflow-y:auto; padding-left:20px; list-style:square;">
-                    ${victors.length > 0 ? victors.map(v => `<li>${v.name}</li>`).join('') : '<li>No completions yet.</li>'}
-                </ul>`;
+                
+                <h3 style="color:var(--accent); margin-bottom:10px;">Victors (${victors.length})</h3>
+                <ul style="max-height:120px; overflow-y:auto; list-style:square; padding-left:20px; color:#ddd;">
+                    ${victors.length > 0 ? victors.map(v => `<li style="margin-bottom:5px;">${v.name}</li>`).join('') : '<li>No victors recorded yet.</li>'}
+                </ul>
+            `;
             
-            openModal(content);
+            document.getElementById('modal-body').innerHTML = content;
+            document.getElementById('infoModal').style.display = "block";
         }
 
-        function openModal(c) { 
-            document.getElementById('modal-body').innerHTML = c; 
-            document.getElementById('infoModal').style.display = "block"; 
-            document.body.style.overflow = "hidden"; // Prevent background scrolling
-        }
-
-        function closeModal() { 
-            document.getElementById('infoModal').style.display = "none"; 
-            document.body.style.overflow = "auto"; 
-        }
-
-        // Close modal if user clicks outside of the box
-        window.onclick = function(event) {
-            const modal = document.getElementById('infoModal');
+        function closeModal() { document.getElementById('infoModal').style.display = "none"; }
+        window.onclick = function(e) { if(e.target == document.getElementById('infoModal')) closeModal(); }
+    </script>
+</body>
+</html>
