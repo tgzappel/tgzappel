@@ -121,11 +121,22 @@ const DATA = {
             location: "Coming soon.", 
             desc: "A sequel to A Crimson End! It was originally going to star like AtSC, but I decided it was too difficult." 
         },
+        { 
+            id: "boci", 
+            name: "Best of Crushing It!", 
+            author: "TheGrassyGuys", 
+            skills: "General Crusher Tech, Sidejumping and related tech", 
+            stats: "Average Enjoyment: 8 - Average Quality: 7 - Skill to Effort Balance: 5", 
+            points: 330, 
+            img: "assets/boci.png", 
+            location: "Coming soon.", 
+            desc: "Best of Crushing It! This level is a highlight reel of a bunch of funny crusher stuff." 
+        },
         // Add more levels here...
     ],
     players: [
-        { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts", "pop", "ff"] },
-        { name: "Krackerz", completions: ["os", "kts", "pop", "aic", "agr", "ff"] },
+        { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts", "pop", "ff", "boci"] },
+        { name: "Krackerz", completions: ["os", "kts", "pop", "aic", "agr", "ff", "boci"] },
         { name: "programminguy", completions: ["pmi"] },
         { name: "fireball9746", completions: ["prpac", "kts"] },
         { name: "swskrei", completions: ["kts"] },
