@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav><a href="index.html">List</a> | <a href="leaderboard.html">Leaderboard</a></nav>
+    <div id="container">
+        <h1>The Grandmaster Zone</h1>
+        <div id="list-view"></div>
+    </div>
+    <script src="data.js"></script>
+    <script>
+        const listView = document.getElementById('list-view');
+        listView.innerHTML = DATA.levels.map((lvl, i) => `
+            <div class="card">
+                <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="info">
+                    <h2>#${i + 1} - ${lvl.name}</h2>
+                    <p>Points: ${lvl.points} | Code: <code>${lvl.code}</code></p>
+                </div>
+            </div>
+        `).join('');
+    </script>
+</body>
+</html>
