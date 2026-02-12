@@ -83,7 +83,7 @@ const DATA = {
         { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts"] },
         { name: "Krackerz", completions: ["os", "kts"] },
         { name: "programminguy", completions: ["pmi"] },
-        { name: "fireball", completions: ["prpac", "kts"] },
+        { name: "fireball9746", completions: ["prpac", "kts"] },
         { name: "swskrei", completions: ["kts"] },
         { name: "ThatAppelGuy", completions: ["kts"] },
         { name: "taliix", completions: ["kts"] }
