@@ -13,42 +13,79 @@
     </nav>
 
     <div id="container" style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
-        <h1 style="text-align:center; font-size:2.5rem; margin-bottom:30px;">Top Players</h1>
+        <h1 style="text-align:center; font-size:2.5rem; margin-bottom:10px;">Top Players</h1>
+        <p style="text-align:center; color:var(--text-muted); margin-bottom:30px;">Rankings based on total points from completed levels.</p>
+        
         <div class="search-box">
             <input type="text" id="pSearch" placeholder="Search for a player..." onkeyup="renderLeaderboard()">
         </div>
-        <div id="leaderboard-list"></div>
+        
+        <div id="leaderboard-list">
+            </div>
     </div>
 
     <script src="data.js"></script>
     <script>
         let leaderboard = [];
+
+        // This function is called by data.js once the spreadsheet is loaded
+        function renderLevels() {
+            calculateLeaderboard();
+        }
+
         function calculateLeaderboard() {
-            if (!window.DATA.players) return;
+            if (!window.DATA || !window.DATA.players || !window.DATA.levels) return;
+
             leaderboard = DATA.players.map(p => {
-                let pts = 0;
-                p.completions.forEach(id => {
-                    const l = DATA.levels.find(lvl => lvl.id.toLowerCase() === id.trim().toLowerCase());
-                    if (l) pts += l.points;
+                let totalPoints = 0;
+                // Match completions to level points
+                p.completions.forEach(levelId => {
+                    const foundLevel = DATA.levels.find(l => l.id.toLowerCase().trim() === levelId.toLowerCase().trim());
+                    if (foundLevel) {
+                        totalPoints += foundLevel.points;
+                    }
                 });
-                return { name: p.name, count: p.completions.length, points: pts };
-            }).sort((a, b) => b.points - a.points);
+                return { 
+                    name: p.name, 
+                    count: p.completions.length, 
+                    points: totalPoints 
+                };
+            })
+            // Sort by points (highest first)
+            .sort((a, b) => b.points - a.points);
+
             renderLeaderboard();
         }
 
         function renderLeaderboard() {
             const search = document.getElementById('pSearch').value.toLowerCase();
             const filtered = leaderboard.filter(p => p.name.toLowerCase().includes(search));
-            document.getElementById('leaderboard-list').innerHTML = filtered.map((p, i) => `
-                <div class="level-entry" style="cursor:default">
+            
+            const listElement = document.getElementById('leaderboard-list');
+            
+            if (filtered.length === 0) {
+                listElement.innerHTML = `<p style="text-align:center; color:var(--text-muted);">No players found.</p>`;
+                return;
+            }
+
+            listElement.innerHTML = filtered.map((p, i) => `
+                <div class="level-entry" style="cursor:default; margin-bottom:10px;">
                     <div class="level-rank">#${i + 1}</div>
                     <div class="level-info">
-                        <span class="level-name">${p.name}</span>
-                        <span class="level-meta">${p.count} levels completed</span>
+                        <div class="level-name">${p.name}</div>
+                        <div class="level-meta">${p.count} levels completed</div>
                     </div>
-                    <div class="level-points" style="font-size:1.15rem">${p.points.toLocaleString()} pts</div>
+                    <div class="level-points" style="font-size:1.2rem;">${p.points.toLocaleString()} pts</div>
                 </div>`).join('');
         }
+
+        // Emergency backup: If renderLevels doesn't trigger, try every second until data is found
+        const retryInterval = setInterval(() => {
+            if (window.DATA && window.DATA.players) {
+                calculateLeaderboard();
+                clearInterval(retryInterval);
+            }
+        }, 1000);
     </script>
 </body>
 </html>
