@@ -32,12 +32,24 @@ const DATA = {
             img: "assets/os.png", 
             code: "Coming soon.", 
             desc: "Was an Aimed Top 1, but wasn't verified in time. Still insane." 
+        },
+        { 
+            id: "pmi", 
+            name: "Programminguy's Mild Inconvience", 
+            author: "programminguy", 
+            skills: "Kaizo, Consistency, Speedrun", 
+            stats: "N/A", 
+            points: 900, 
+            img: "assets/pmi.png", 
+            code: "Coming soon.", 
+            desc: "2 minute speedrun." 
         }
         // Add more levels here...
     ],
     players: [
-        { name: "Grassy", completions: ["atsc", "tic"] },
-        { name: "Krackerz", completions: ["os"] }
+        { name: "TheGrassyGuys", completions: ["atsc", "tic"] },
+        { name: "Krackerz", completions: ["os"] },
+        { name: "programminguy", completions: ["pmi"] }
         // Add more players here...
     ]
 };
