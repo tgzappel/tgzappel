@@ -7,38 +7,51 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav><a href="index.html">LEVELS</a><a href="leaderboard.html" class="active">LEADERBOARD</a></nav>
-    <div id="container">
-        <h1 style="text-align:center">TOP PLAYERS</h1>
-        <input type="text" id="pSearch" placeholder="Find a player..." onkeyup="renderLeaderboard()" style="margin-bottom:20px">
-        <div id="leaderboard-list"></div>
+    <nav>
+        <a href="index.html">LEVELS</a>
+        <a href="leaderboard.html" class="active">LEADERBOARD</a>
+    </nav>
+
+    <div id="container" style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
+        <h1 style="text-align:center; letter-spacing: 4px; color: var(--accent);">RANKINGS</h1>
+        <input type="text" id="pSearch" placeholder="Find a player..." onkeyup="renderLeaderboard()">
+        
+        <div id="leaderboard-list">
+            </div>
     </div>
+
     <script src="data.js"></script>
     <script>
         let leaderboard = [];
+
         function calculateLeaderboard() {
+            if (!window.DATA || !window.DATA.players) return;
             leaderboard = DATA.players.map(p => {
                 let pts = 0;
                 p.completions.forEach(id => {
-                    const l = DATA.levels.find(lvl => lvl.id.toLowerCase() === id.toLowerCase());
+                    const l = DATA.levels.find(lvl => lvl.id.toLowerCase() === id.trim().toLowerCase());
                     if (l) pts += l.points;
                 });
                 return { name: p.name, count: p.completions.length, points: pts };
             }).sort((a, b) => b.points - a.points);
             renderLeaderboard();
         }
+
         function renderLeaderboard() {
             const search = document.getElementById('pSearch').value.toLowerCase();
             const list = document.getElementById('leaderboard-list');
             const filtered = leaderboard.filter(p => p.name.toLowerCase().includes(search));
+            
             list.innerHTML = filtered.map((p, i) => `
                 <div class="player-card">
                     <div class="player-rank">#${i + 1}</div>
-                    <div class="player-info"><strong>${p.name}</strong><br><small>${p.count} CLEARS</small></div>
-                    <div class="player-points">${p.points.toLocaleString()} pts</div>
+                    <div class="player-info">
+                        <div class="p-name">${p.name}</div>
+                        <div class="p-count">${p.count} CLEARS</div>
+                    </div>
+                    <div class="player-points">${p.points.toLocaleString()} <small>PTS</small></div>
                 </div>`).join('');
         }
     </script>
 </body>
 </html>
-<!--Fix-->
