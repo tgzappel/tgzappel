@@ -41,20 +41,20 @@ nav a.active { color: var(--accent); }
     padding: 0 20px;
 }
 
-#list-view, #leaderboard-list {
+/* --- THE NEW LIST LAYOUT --- */
+#list-view {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* --- LEVEL ENTRY --- */
 .level-entry {
     display: flex;
     align-items: center;
     background: var(--bg-card);
     border-radius: 16px;
     border: 1px solid var(--border);
-    padding: 12px 20px;
+    padding: 10px; /* Reduced padding for image focus */
     cursor: pointer;
     transition: transform 0.2s ease;
     box-shadow: var(--shadow);
@@ -65,10 +65,20 @@ nav a.active { color: var(--accent); }
     border-color: var(--accent);
 }
 
+/* 4:3 Image on the FAR LEFT */
+.level-thumb {
+    width: 100px; 
+    height: 75px; /* Perfect 4:3 */
+    object-fit: cover;
+    border-radius: 10px;
+    margin-right: 20px; /* Space between image and text */
+    border: 1px solid var(--border);
+}
+
 .level-rank {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 800;
-    width: 65px;
+    width: 50px; /* Space for the #1 */
     color: var(--text-muted);
 }
 
@@ -77,30 +87,19 @@ nav a.active { color: var(--accent); }
 }
 
 .level-name {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 700;
 }
 
 .level-meta {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
-    margin-left: 8px;
 }
 
 .level-points {
     font-weight: 700;
     color: var(--accent);
-    margin-left: 10px;
-}
-
-/* 4:3 Landscape Ratio Thumbnail */
-.level-thumb {
-    width: 120px; 
-    height: 90px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-left: 20px;
-    border: 1px solid var(--border);
+    margin-right: 15px;
 }
 
 /* --- SIDEBAR --- */
@@ -125,10 +124,9 @@ nav a.active { color: var(--accent); }
     border-radius: 12px;
     font-weight: 700;
     margin-bottom: 25px;
-    transition: opacity 0.2s;
 }
 
-.search-box input, #pSearch {
+.search-box input {
     width: 100%;
     padding: 12px;
     border-radius: 10px;
@@ -137,23 +135,9 @@ nav a.active { color: var(--accent); }
     outline: none;
 }
 
-.tag-btn {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    background: #eee;
-    margin-bottom: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    text-align: left;
-}
-
-.tag-btn.active-tag { background: var(--accent); color: white; }
-
-/* --- MODAL FIX --- */
+/* --- MODAL --- */
 .modal {
-    display: none; /* Forced hidden on load */
+    display: none;
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.5);
@@ -163,10 +147,9 @@ nav a.active { color: var(--accent); }
 
 .modal-content {
     background: #fff;
-    max-width: 550px;
+    max-width: 500px;
     margin: 80px auto;
     padding: 35px;
     border-radius: 24px;
     position: relative;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
