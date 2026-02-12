@@ -21,12 +21,23 @@ const DATA = {
             img: "assets/tic.png", 
             code: "Coming soon.", 
             desc: "Fiery tendrils of suffering swiftly embrace, only to be vanquished in the blink of an eye." 
+        },
+        { 
+            id: "os", 
+            name: "Open Space", 
+            author: "cwktao15764", 
+            skills: "Absolute Precision", 
+            stats: "N/A", 
+            points: 1750, 
+            img: "assets/os.png", 
+            code: "Coming soon.", 
+            desc: "Was an Aimed Top 1, but wasn't verified in time. Still insane." 
         }
         // Add more levels here...
     ],
     players: [
         { name: "Grassy", completions: ["atsc", "tic"] },
-        { name: "AppelPro", completions: ["atsc"] }
+        { name: "Krackerz", completions: ["os"] }
         // Add more players here...
     ]
 };
