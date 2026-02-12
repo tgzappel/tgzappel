@@ -103,7 +103,7 @@ const DATA = {
             id: "agr", 
             name: "Agoraphobia", 
             author: "cwktao15764", 
-            skills: "Needle Gameplay, Chokepoints, Gerald" 
+            skills: "Needle Gameplay, Chokepoints, Gerald", 
             stats: "N/A", 
             points: 375, 
             img: "assets/agr.png", 
