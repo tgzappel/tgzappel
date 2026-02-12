@@ -1,26 +1,217 @@
-:root { --accent: #00ffff; --gold: #ffd700; --bg: #0b0b0b; }
-body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; }
-nav { display: flex; justify-content: center; gap: 20px; padding: 20px; background: #111; }
-nav a { color: #888; text-decoration: none; font-weight: bold; }
-nav a.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+:root {
+    --accent: #00ffff;
+    --accent-glow: rgba(0, 255, 255, 0.3);
+    --gold: #ffd700;
+    --bg: #050505;
+    --card-bg: #111111;
+    --border: #222222;
+}
 
-#main-layout { display: flex; gap: 30px; max-width: 1200px; margin: 20px auto; padding: 20px; }
-#sidebar { width: 200px; display: flex; flex-direction: column; gap: 10px; }
-.tag-btn { background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 10px; border-radius: 5px; cursor: pointer; text-align: left; }
-.tag-btn.active-tag { border-color: var(--accent); color: var(--accent); }
+body {
+    background: var(--bg);
+    color: #fff;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    line-height: 1.6;
+}
 
-#list-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; flex-grow: 1; }
-.card { background: #161616; border-radius: 10px; overflow: hidden; border: 1px solid #222; cursor: pointer; }
-.card img { width: 100%; height: 150px; object-fit: cover; }
-.card .info { padding: 15px; }
+/* --- NAVIGATION --- */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 25px;
+    background: rgba(17, 17, 17, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
 
-.player-card { display: flex; align-items: center; background: #161616; padding: 15px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #222; }
-.player-rank { width: 50px; font-size: 1.2em; font-weight: bold; }
-.player-info { flex-grow: 1; }
-.player-points { color: var(--gold); font-weight: bold; }
+nav a {
+    color: #666;
+    text-decoration: none;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
 
-input[type="text"] { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 5px; box-sizing: border-box; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 15px 0; }
-.stat-grid div { background: #222; padding: 10px; border-radius: 5px; text-align: center; font-size: 0.8em; }
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-.modal-content { background: #111; width: 90%; max-width: 500px; margin: 50px auto; padding: 30px; border-radius: 10px; position: relative; }
+nav a.active {
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* --- LAYOUT: Sidebar on the Right --- */
+#main-layout {
+    display: flex;
+    flex-direction: row; /* Main content first, sidebar second */
+    gap: 40px;
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+#container {
+    flex-grow: 1;
+}
+
+#sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid var(--border);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+/* --- SEARCH BAR --- */
+#searchBar, #pSearch {
+    width: 100%;
+    padding: 15px 20px;
+    background: #000;
+    border: 1px solid var(--border);
+    color: #fff;
+    border-radius: 10px;
+    font-size: 1rem;
+    margin-bottom: 30px;
+    transition: 0.3s;
+    outline: none;
+}
+
+#searchBar:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* --- SIDEBAR BUTTONS --- */
+.tag-btn {
+    width: 100%;
+    background: #000;
+    color: #888;
+    border: 1px solid var(--border);
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.tag-btn:hover {
+    color: #fff;
+    border-color: #444;
+}
+
+.tag-btn.active-tag {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: inset 0 0 10px var(--accent-glow);
+}
+
+#clear-btn {
+    width: 100%;
+    margin-top: 15px;
+    background: transparent;
+    border: 1px dashed #444;
+    color: #666;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+#clear-btn:hover {
+    color: #ff4444;
+    border-color: #ff4444;
+}
+
+/* --- LEVEL CARDS --- */
+#list-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+}
+
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    filter: grayscale(20%);
+    transition: 0.3s;
+}
+
+.card:hover img {
+    filter: grayscale(0%);
+}
+
+.card .info {
+    padding: 20px;
+}
+
+.card h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.card p {
+    color: var(--gold);
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+/* --- LEADERBOARD CARDS --- */
+.player-card {
+    display: flex;
+    align-items: center;
+    background: var(--card-bg);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: 0.3s;
+}
+
+.player-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
+}
+
+/* --- MODAL --- */
+.modal-content {
+    background: #0a0a0a;
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 50px rgba(0, 255, 255, 0.1);
+    color: #eee;
+}
+
+/* Custom Scrollbar for that Gaming Look */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #050505; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
