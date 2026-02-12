@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav><a href="index.html">List</a> | <a href="leaderboard.html">Leaderboard</a></nav>
+    <div id="container">
+        <h1>Top Players</h1>
+        <div id="leaderboard-view"></div>
+    </div>
+    <script src="data.js"></script>
+    <script>
+        const leaderboard = DATA.players.map(player => {
+            let total = 0;
+            player.completions.forEach(compId => {
+                const lvl = DATA.levels.find(l => l.id === compId);
+                if (lvl) total += lvl.points;
+            });
+            return { name: player.name, total };
+        }).sort((a, b) => b.total - a.total);
+
+        document.getElementById('leaderboard-view').innerHTML = leaderboard.map((p, i) => `
+            <div class="player-row">
+                <span>#${i + 1}</span>
+                <strong>${p.name}</strong>
+                <span class="score">${p.total} pts</span>
+            </div>
+        `).join('');
+    </script>
+</body>
+</html>
