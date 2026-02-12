@@ -16,15 +16,14 @@
     <div id="main-layout">
         <main id="container">
             <div class="search-box">
-                <input type="text" id="searchBar" placeholder="Search level or author..." onkeyup="filterLevels()">
+                <input type="text" id="searchBar" placeholder="Search..." onkeyup="filterLevels()">
             </div>
             <div id="list-view"></div>
         </main>
 
         <aside id="sidebar">
             <a href="https://docs.google.com/forms/d/e/1FAIpQLSfgjpCE6e8sHa-GcjVrD27Tcymbc0Q7w2MGdxVTtWnKi-uoXg/viewform?usp=publish-editor" target="_blank" class="submit-btn">Submit Record</a>
-            
-            <h3 style="font-size:0.75rem; color:var(--text-muted); letter-spacing:1px; margin-bottom:12px;">FILTER SKILLS</h3>
+            <h3 style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">FILTERS</h3>
             <div id="tag-filters">
                 <button class="tag-btn" onclick="toggleTag('Precision')">Precision</button>
                 <button class="tag-btn" onclick="toggleTag('Speedrun')">Speedrun</button>
@@ -61,43 +60,28 @@
                 return match && tags;
             });
 
+            // IMAGE FIRST, THEN RANK, THEN INFO
             document.getElementById('list-view').innerHTML = filtered.map((lvl, i) => `
                 <div class="level-entry" onclick="showLevelDetails('${lvl.id}')">
+                    <img class="level-thumb" src="${lvl.img}" onerror="this.src='https://via.placeholder.com/100x75?text=No+Img'">
                     <div class="level-rank">#${i + 1}</div>
                     <div class="level-info">
-                        <span class="level-name">${lvl.name}</span>
-                        <span class="level-meta">by ${lvl.author}</span>
-                        <span class="level-points"> — ${lvl.points}pts</span>
+                        <div class="level-name">${lvl.name}</div>
+                        <div class="level-meta">by ${lvl.author}</div>
                     </div>
-                    <img class="level-thumb" src="${lvl.img}" onerror="this.src='https://via.placeholder.com/120x90?text=No+Img'">
+                    <div class="level-points">${lvl.points}pts</div>
                 </div>`).join('');
         }
 
         function showLevelDetails(id) {
             const lvl = DATA.levels.find(l => l.id === id);
             const victors = DATA.players.filter(p => p.completions.includes(id));
-
             document.getElementById('modal-body').innerHTML = `
-                <h1 style="margin:0 0 10px 0;">${lvl.name}</h1>
-                <p style="color:var(--text-muted); margin-bottom:25px;">Created by <strong>${lvl.author}</strong></p>
-                
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
-                    <div style="background:#f5f5f7; padding:15px; border-radius:12px;">
-                        <span style="display:block; font-size:0.7rem; color:var(--text-muted);">VERIFIED BY</span>
-                        <strong>${lvl.verifier}</strong>
-                    </div>
-                    <div style="background:#f5f5f7; padding:15px; border-radius:12px;">
-                        <span style="display:block; font-size:0.7rem; color:var(--text-muted);">POINTS</span>
-                        <strong style="color:var(--accent);">${lvl.points}</strong>
-                    </div>
-                </div>
-
-                <p style="line-height:1.6;">${lvl.desc || "No description provided."}</p>
+                <h1>${lvl.name}</h1>
+                <p>By ${lvl.author}</p>
+                <p>${lvl.desc || "No description."}</p>
                 <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-                <h3 style="font-size:0.9rem;">VICTORS (${victors.length})</h3>
-                <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                    ${victors.map(v => `<span style="background:#eee; padding:5px 12px; border-radius:20px; font-size:0.8rem;">${v.name}</span>`).join('')}
-                </div>
+                <p><strong>Victors:</strong> ${victors.map(v => v.name).join(', ') || "None"}</p>
             `;
             document.getElementById('infoModal').style.display = "block";
         }
