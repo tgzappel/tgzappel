@@ -41,13 +41,13 @@ nav a.active { color: var(--accent); }
     padding: 0 20px;
 }
 
-/* --- POINTERCRATE STYLE ENTRIES --- */
 #list-view, #leaderboard-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
+/* --- LEVEL ENTRY --- */
 .level-entry {
     display: flex;
     align-items: center;
@@ -93,13 +93,14 @@ nav a.active { color: var(--accent); }
     margin-left: 10px;
 }
 
-/* 3:4 Portrait Ratio */
+/* 4:3 Landscape Ratio Thumbnail */
 .level-thumb {
-    width: 60px; 
-    height: 80px;
+    width: 120px; 
+    height: 90px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 10px;
     margin-left: 20px;
+    border: 1px solid var(--border);
 }
 
 /* --- SIDEBAR --- */
@@ -109,6 +110,8 @@ nav a.active { color: var(--accent); }
     border-radius: 20px;
     border: 1px solid var(--border);
     height: fit-content;
+    position: sticky;
+    top: 20px;
 }
 
 .submit-btn {
@@ -124,8 +127,6 @@ nav a.active { color: var(--accent); }
     margin-bottom: 25px;
     transition: opacity 0.2s;
 }
-
-.submit-btn:hover { opacity: 0.9; }
 
 .search-box input, #pSearch {
     width: 100%;
@@ -150,9 +151,9 @@ nav a.active { color: var(--accent); }
 
 .tag-btn.active-tag { background: var(--accent); color: white; }
 
-/* --- MODAL (Hidden by default) --- */
+/* --- MODAL FIX --- */
 .modal {
-    display: none;
+    display: none; /* Forced hidden on load */
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.5);
@@ -162,9 +163,10 @@ nav a.active { color: var(--accent); }
 
 .modal-content {
     background: #fff;
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 30px;
+    max-width: 550px;
+    margin: 80px auto;
+    padding: 35px;
     border-radius: 24px;
     position: relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
