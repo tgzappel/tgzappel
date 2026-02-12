@@ -51,7 +51,7 @@ const DATA = {
             skills: "Kaizo Tech, Crouchspam", 
             stats: "ugh ill do it later", 
             points: 750, 
-            img: "assets/pmi.png", 
+            img: "assets/ssc.png", 
             code: "Coming soon.", 
             desc: "The next big difficulty jump. From here it only gets worse. Good Luck!" 
         }
