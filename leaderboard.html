@@ -13,20 +13,10 @@
     </nav>
 
     <div id="container">
-        <h1>TOP PLAYERS</h1>
+        <h1 style="text-align: center; margin-bottom: 30px;">TOP PLAYERS</h1>
         
-        <table class="leaderboard-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Player</th>
-                    <th>Completions</th>
-                    <th>Total Points</th>
-                </tr>
-            </thead>
-            <tbody id="leaderboard-body">
-                </tbody>
-        </table>
+        <div id="leaderboard-list">
+            </div>
     </div>
 
     <script src="./data.js"></script>
@@ -35,18 +25,13 @@
         let leaderboard = [];
 
         function calculateLeaderboard() {
-            if (!window.DATA || !window.DATA.players || !window.DATA.levels) return;
+            if (!window.DATA || !window.DATA.players) return;
 
-            // Map players to their total scores
             leaderboard = DATA.players.map(player => {
                 let totalPoints = 0;
-                
                 player.completions.forEach(id => {
-                    // Finds the level by ID and adds its points (Column I / Index 8)
                     const level = DATA.levels.find(l => l.id.toLowerCase() === id.toLowerCase());
-                    if (level) {
-                        totalPoints += level.points;
-                    }
+                    if (level) totalPoints += level.points;
                 });
 
                 return {
@@ -56,31 +41,38 @@
                 };
             });
 
-            // Sort: highest points first
             leaderboard.sort((a, b) => b.points - a.points);
             renderLeaderboard();
         }
 
         function renderLeaderboard() {
-            const lbBody = document.getElementById('leaderboard-body');
-            if (!lbBody) return;
+            const lbList = document.getElementById('leaderboard-list');
+            if (!lbList) return;
 
             if (leaderboard.length === 0) {
-                lbBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px;">No players found.</td></tr>`;
+                lbList.innerHTML = `<p style="text-align:center; opacity:0.5;">No players found.</p>`;
                 return;
             }
 
-            lbBody.innerHTML = leaderboard.map((player, index) => `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td><strong>${player.name}</strong></td>
-                    <td>${player.count}</td>
-                    <td style="color:var(--gold); font-weight:bold;">${player.points.toLocaleString()}</td>
-                </tr>
-            `).join('');
-        }
+            lbList.innerHTML = leaderboard.map((player, index) => {
+                // Determine a special color for Top 3
+                let rankColor = "#fff";
+                if(index === 0) rankColor = "#FFD700"; // Gold
+                if(index === 1) rankColor = "#C0C0C0"; // Silver
+                if(index === 2) rankColor = "#CD7F32"; // Bronze
 
-        // The data.js script calls calculateLeaderboard() automatically once the CSVs load!
+                return `
+                <div class="player-card">
+                    <div class="player-rank" style="color:${rankColor}">#${index + 1}</div>
+                    <div class="player-info">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-stats">${player.count} Levels Cleared</div>
+                    </div>
+                    <div class="player-points">${player.points.toLocaleString()} pts</div>
+                </div>
+                `;
+            }).join('');
+        }
     </script>
 </body>
 </html>
