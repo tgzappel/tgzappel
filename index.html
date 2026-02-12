@@ -1,28 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>The Grandmaster Zone | Levels</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav><a href="index.html">List</a> | <a href="leaderboard.html">Leaderboard</a></nav>
+    <nav>
+        <a href="index.html">LEVEL LIST</a>
+        <a href="leaderboard.html">LEADERBOARD</a>
+    </nav>
     <div id="container">
-        <h1>The Grandmaster Zone</h1>
+        <h1>TOP LEVELS</h1>
         <div id="list-view"></div>
     </div>
-    <script src="data.js"></script>
-    <script>
-        const listView = document.getElementById('list-view');
-listView.innerHTML = DATA.levels.map((lvl, i) => `
-    <div class="card clickable" onclick="showLevelDetails('${lvl.id}')">
-        <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/150'">
-        <div class="info">
-            <h2>#${i + 1} - ${lvl.name}</h2>
-            <p>Points: ${lvl.points}</p>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
         </div>
     </div>
-`).join('');
+
+    <script src="data.js"></script>
+    <script>
+        document.getElementById('list-view').innerHTML = DATA.levels.map((lvl, i) => `
+            <div class="card" onclick="showLevelDetails('${lvl.id}')">
+                <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/220x120?text=No+Image'">
+                <div class="info">
+                    <h2 style="margin:0">#${i + 1} - ${lvl.name}</h2>
+                    <p style="color:#aaa; margin:5px 0">Points: ${lvl.points}</p>
+                </div>
             </div>
         `).join('');
+
+        function showLevelDetails(id) {
+            const lvl = DATA.levels.find(l => l.id === id);
+            const victors = DATA.players.filter(p => p.completions.includes(id));
+            const content = `
+                <h2>${lvl.name}</h2>
+                <p><strong>Level Code:</strong> ${lvl.code}</p>
+                <p>${lvl.desc}</p>
+                <hr border="1">
+                <h3>Victors (${victors.length})</h3>
+                <ul>${victors.map(v => `<li>${v.name}</li>`).join('')}</ul>
+            `;
+            openModal(content);
+        }
+
+        function openModal(c) { document.getElementById('modal-body').innerHTML = c; document.getElementById('infoModal').style.display = "block"; }
+        function closeModal() { document.getElementById('infoModal').style.display = "none"; }
     </script>
 </body>
 </html>
