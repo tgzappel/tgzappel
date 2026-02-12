@@ -28,7 +28,7 @@ const DATA = {
             author: "cwktao15764", 
             skills: "Absolute Precision", 
             stats: "N/A", 
-            points: 1750, 
+            points: 1000, 
             img: "assets/os.png", 
             code: "Coming soon.", 
             desc: "Was an Aimed Top 1, but wasn't verified in time. Still insane." 
