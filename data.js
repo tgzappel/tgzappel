@@ -99,11 +99,33 @@ const DATA = {
             location: "Coming soon.", 
             desc: "Claustrophobia, then Nyctophobia. Now introducing: Aichmophobia." 
         },
+        { 
+            id: "agr", 
+            name: "Agoraphobia", 
+            author: "cwktao15764", 
+            skills: "Needle Gameplay, Chokepoints, Gerald" 
+            stats: "N/A", 
+            points: 375, 
+            img: "assets/agr.png", 
+            location: "Coming soon.", 
+            desc: "Verified by Krackerz." 
+        },
+        { 
+            id: "ff", 
+            name: "Final Flame", 
+            author: "TheGrassyGuys", 
+            skills: "Keydoor, Crusher, Crumble, Sidejumping", 
+            stats: "Average Enjoyment: 8 - Average Quality: 7 - Skill to Effort Balance: 3", 
+            points: 350, 
+            img: "assets/ff.png", 
+            location: "Coming soon.", 
+            desc: "A sequel to A Crimson End! It was originally going to star like AtSC, but I decided it was too difficult." 
+        },
         // Add more levels here...
     ],
     players: [
         { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts", "pop"] },
-        { name: "Krackerz", completions: ["os", "kts", "pop", "aic"] },
+        { name: "Krackerz", completions: ["os", "kts", "pop", "aic", "agr"] },
         { name: "programminguy", completions: ["pmi"] },
         { name: "fireball9746", completions: ["prpac", "kts"] },
         { name: "swskrei", completions: ["kts"] },
