@@ -43,11 +43,22 @@ const DATA = {
             img: "assets/pmi.png", 
             code: "Coming soon.", 
             desc: "2 minute speedrun." 
+        },
+        { 
+            id: "ssc", 
+            name: "Sodalite Skyline C-Side", 
+            author: "TheGrassyGuys", 
+            skills: "Kaizo Tech, Crouchspam", 
+            stats: "ugh ill do it later", 
+            points: 750, 
+            img: "assets/pmi.png", 
+            code: "Coming soon.", 
+            desc: "The next big difficulty jump. From here it only gets worse. Good Luck!" 
         }
         // Add more levels here...
     ],
     players: [
-        { name: "TheGrassyGuys", completions: ["atsc", "tic"] },
+        { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc"] },
         { name: "Krackerz", completions: ["os"] },
         { name: "programminguy", completions: ["pmi"] }
         // Add more players here...
