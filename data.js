@@ -131,7 +131,7 @@ const DATA = {
             img: "assets/boci.png", 
             location: "Coming soon.", 
             desc: "Best of Crushing It! This level is a highlight reel of a bunch of funny crusher stuff." 
-        },
+        }
         // Add more levels here...
     ],
     players: [
