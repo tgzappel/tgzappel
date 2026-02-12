@@ -1,32 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>The Grandmaster Zone | Leaderboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav><a href="index.html">List</a> | <a href="leaderboard.html">Leaderboard</a></nav>
+    <nav>
+        <a href="index.html">LEVEL LIST</a>
+        <a href="leaderboard.html">LEADERBOARD</a>
+    </nav>
     <div id="container">
-        <h1>Top Players</h1>
+        <h1>TOP PLAYERS</h1>
         <div id="leaderboard-view"></div>
     </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
     <script src="data.js"></script>
     <script>
-        const leaderboard = DATA.players.map(player => {
+        const leaderboard = DATA.players.map(p => {
             let total = 0;
-            player.completions.forEach(compId => {
-                const lvl = DATA.levels.find(l => l.id === compId);
+            p.completions.forEach(id => {
+                const lvl = DATA.levels.find(l => l.id === id);
                 if (lvl) total += lvl.points;
             });
-            return { name: player.name, total };
+            return { ...p, total };
         }).sort((a, b) => b.total - a.total);
 
         document.getElementById('leaderboard-view').innerHTML = leaderboard.map((p, i) => `
-            <div class="player-row">
-                <span>#${i + 1}</span>
-                <strong>${p.name}</strong>
-                <span class="score">${p.total} pts</span>
+            <div class="player-row" onclick="showPlayerDetails('${p.name}')">
+                <span style="font-weight:bold; width: 30px">#${i + 1}</span>
+                <span style="flex-grow:1; margin-left: 20px">${p.name}</span>
+                <span class="score">${p.total}</span>
             </div>
         `).join('');
+
+        function showPlayerDetails(name) {
+            const player = leaderboard.find(p => p.name === name);
+            const beaten = player.completions.map(id => DATA.levels.find(l => l.id === id));
+            const content = `
+                <h2>${player.name}</h2>
+                <p><strong>Rank:</strong> #${leaderboard.indexOf(player) + 1}</p>
+                <p><strong>Total Points:</strong> ${player.total}</p>
+                <hr>
+                <h3>Completed Levels (${beaten.length})</h3>
+                <ul>${beaten.map(l => `<li>${l ? l.name : 'Unknown Level'}</li>`).join('')}</ul>
+            `;
+            openModal(content);
+        }
+
+        function openModal(c) { document.getElementById('modal-body').innerHTML = c; document.getElementById('infoModal').style.display = "block"; }
+        function closeModal() { document.getElementById('infoModal').style.display = "none"; }
     </script>
 </body>
 </html>
