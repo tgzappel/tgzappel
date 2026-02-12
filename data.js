@@ -88,11 +88,22 @@ const DATA = {
             location: "Coming soon.", 
             desc: "Suffer." 
         },
+        { 
+            id: "aic", 
+            name: "Aichmophobia", 
+            author: "BiskuitzKrackerz", 
+            skills: "Needle Gameplay", 
+            stats: "N/A", 
+            points: 425, 
+            img: "assets/aic.png", 
+            location: "Coming soon.", 
+            desc: "Suffer." 
+        },
         // Add more levels here...
     ],
     players: [
         { name: "TheGrassyGuys", completions: ["atsc", "tic", "ssc", "kts", "pop"] },
-        { name: "Krackerz", completions: ["os", "kts", "pop"] },
+        { name: "Krackerz", completions: ["os", "kts", "pop", "aic"] },
         { name: "programminguy", completions: ["pmi"] },
         { name: "fireball9746", completions: ["prpac", "kts"] },
         { name: "swskrei", completions: ["kts"] },
