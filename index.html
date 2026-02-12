@@ -1,4 +1,3 @@
-<!--fix-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,74 +13,125 @@
     </nav>
 
     <div id="main-layout">
+        <main id="container">
+            <div class="search-box">
+                <input type="text" id="searchBar" placeholder="Search level, author, or verifier..." onkeyup="filterLevels()">
+            </div>
+            <div id="list-view"></div>
+        </main>
+
         <aside id="sidebar">
-            <h3>Filter Skills</h3>
+            <div class="sidebar-header">
+                <h3>FILTER SKILLS</h3>
+                <p>Select multiple to narrow down</p>
+            </div>
             <div id="tag-filters">
                 <button class="tag-btn" onclick="toggleTag('Precision')">Precision</button>
                 <button class="tag-btn" onclick="toggleTag('Speedrun')">Speedrun</button>
                 <button class="tag-btn" onclick="toggleTag('Memory')">Memory</button>
                 <button class="tag-btn" onclick="toggleTag('Timing')">Timing</button>
+                <button class="tag-btn" onclick="toggleTag('Technical')">Technical</button>
             </div>
-            <button id="clear-btn" onclick="clearFilters()">Clear Filters</button>
+            <button id="clear-btn" onclick="clearFilters()">× Clear All Filters</button>
         </aside>
-
-        <main id="container">
-            <input type="text" id="searchBar" placeholder="Search level, author, or verifier..." onkeyup="filterLevels()">
-            <div id="list-view"></div>
-        </main>
     </div>
 
-    <div id="infoModal" class="modal"><div class="modal-content">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-        <div id="modal-body"></div>
-    </div></div>
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
 
     <script src="data.js"></script>
     <script>
         let activeTags = [];
+
         function toggleTag(tag) {
-            const btn = event.target;
-            activeTags.includes(tag) ? activeTags = activeTags.filter(t => t !== tag) : activeTags.push(tag);
-            btn.classList.toggle('active-tag');
+            const btn = event.currentTarget;
+            if (activeTags.includes(tag)) {
+                activeTags = activeTags.filter(t => t !== tag);
+                btn.classList.remove('active-tag');
+            } else {
+                activeTags.push(tag);
+                btn.classList.add('active-tag');
+            }
             filterLevels();
         }
+
         function clearFilters() {
             activeTags = [];
             document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active-tag'));
             document.getElementById('searchBar').value = "";
             filterLevels();
         }
+
         function filterLevels() {
             const search = document.getElementById('searchBar').value.toLowerCase();
+            if (!window.DATA || !window.DATA.levels) return;
+
             const filtered = DATA.levels.filter(lvl => {
-                const matchesSearch = lvl.name.toLowerCase().includes(search) || lvl.author.toLowerCase().includes(search);
-                const matchesTags = activeTags.length === 0 || activeTags.every(t => lvl.skills.includes(t));
+                const matchesSearch = lvl.name.toLowerCase().includes(search) || 
+                                    lvl.author.toLowerCase().includes(search) ||
+                                    lvl.verifier.toLowerCase().includes(search);
+                
+                const matchesTags = activeTags.length === 0 || 
+                                    activeTags.every(t => lvl.skills.includes(t));
+
                 return matchesSearch && matchesTags;
             });
-            document.getElementById('list-view').innerHTML = filtered.map(lvl => `
+
+            renderUI(filtered);
+        }
+
+        function renderUI(list) {
+            const listView = document.getElementById('list-view');
+            listView.innerHTML = list.map(lvl => `
                 <div class="card" onclick="showLevelDetails('${lvl.id}')">
-                    <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/300x200'">
-                    <div class="info"><h2>${lvl.name}</h2><p>By ${lvl.author}</p></div>
+                    <div class="card-glow"></div>
+                    <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/400x250/111/00ffff?text=Image+Missing'">
+                    <div class="info">
+                        <h2>${lvl.name}</h2>
+                        <p>By ${lvl.author}</p>
+                    </div>
                 </div>`).join('');
         }
+
         function renderLevels() { filterLevels(); }
+
         function showLevelDetails(id) {
             const lvl = DATA.levels.find(l => l.id === id);
             const victors = DATA.players.filter(p => p.completions.includes(id));
+            
             document.getElementById('modal-body').innerHTML = `
-                <h2>${lvl.name}</h2><p>by ${lvl.author}</p>
+                <h1 style="color:var(--accent); margin-bottom:5px;">${lvl.name}</h1>
+                <p style="opacity:0.6; margin-bottom:20px;">Created by ${lvl.author}</p>
+                
                 <div class="stat-grid">
-                    <div><span>ENJOYMENT</span><strong>${lvl.enjoyment}</strong></div>
-                    <div><span>RATIO</span><strong>${lvl.ratio}</strong></div>
-                    <div><span>QUALITY</span><strong>${lvl.quality}</strong></div>
+                    <div class="stat-item"><span>ENJOYMENT</span><strong>${lvl.enjoyment}</strong></div>
+                    <div class="stat-item"><span>SKILL/EFFORT</span><strong>${lvl.ratio}</strong></div>
+                    <div class="stat-item"><span>QUALITY</span><strong>${lvl.quality}</strong></div>
                 </div>
-                <p><strong>Verified by:</strong> ${lvl.verifier}</p>
-                <p><strong>Skills:</strong> ${lvl.skills}</p>
-                <hr><h3>Victors (${victors.length})</h3>
-                <ul>${victors.map(v => `<li>${v.name}</li>`).join('')}</ul>`;
+
+                <div class="detail-box">
+                    <p><strong>Verified by:</strong> <span style="color:var(--gold)">${lvl.verifier}</span></p>
+                    <p><strong>Skills:</strong> ${lvl.skills}</p>
+                    <p><strong>Points:</strong> ${lvl.points}</p>
+                </div>
+
+                <p class="desc-text">${lvl.desc}</p>
+                
+                <div class="victor-section">
+                    <h3>VICTORS (${victors.length})</h3>
+                    <div class="victor-list">
+                        ${victors.length > 0 ? victors.map(v => `<span>${v.name}</span>`).join('') : 'None yet'}
+                    </div>
+                </div>`;
             document.getElementById('infoModal').style.display = "block";
         }
+
         function closeModal() { document.getElementById('infoModal').style.display = "none"; }
+        window.onclick = function(e) { if(e.target == document.getElementById('infoModal')) closeModal(); }
     </script>
 </body>
 </html>
