@@ -12,13 +12,15 @@
     <script src="data.js"></script>
     <script>
         const listView = document.getElementById('list-view');
-        listView.innerHTML = DATA.levels.map((lvl, i) => `
-            <div class="card">
-                <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/150'">
-                <div class="info">
-                    <h2>#${i + 1} - ${lvl.name}</h2>
-                    <p>Points: ${lvl.points} | Code: <code>${lvl.code}</code></p>
-                </div>
+listView.innerHTML = DATA.levels.map((lvl, i) => `
+    <div class="card clickable" onclick="showLevelDetails('${lvl.id}')">
+        <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/150'">
+        <div class="info">
+            <h2>#${i + 1} - ${lvl.name}</h2>
+            <p>Points: ${lvl.points}</p>
+        </div>
+    </div>
+`).join('');
             </div>
         `).join('');
     </script>
