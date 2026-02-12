@@ -42,6 +42,8 @@
     <script src="data.js"></script>
     <script>
         let activeTags = [];
+
+        // Triggers when spreadsheet data loads
         function renderLevels() { filterLevels(); }
 
         function toggleTag(tag) {
@@ -95,19 +97,19 @@
                         <div style="font-weight:700;">${lvl.quality || 'N/A'}</div>
                     </div>
                     <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
-                        <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Verifier</div>
-                        <div style="font-weight:700;">${lvl.verifier || 'N/A'}</div>
+                        <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Skill/Effort</div>
+                        <div style="font-weight:700; color:#ff9500;">${lvl.ratio || 'N/A'}</div>
                     </div>
                     <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
-                        <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Points</div>
-                        <div style="font-weight:700; color:var(--accent);">${lvl.points}</div>
+                        <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Verifier</div>
+                        <div style="font-weight:700;">${lvl.verifier || 'N/A'}</div>
                     </div>
                 </div>
 
                 <div style="margin-bottom:20px;">
                     <h3 style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">Skills Required</h3>
                     <div style="display:flex; flex-wrap:wrap; gap:5px;">
-                        ${lvl.skills.split(',').map(s => `<span style="background:var(--accent-light); color:var(--accent); padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:600;">${s.trim()}</span>`).join('')}
+                        ${lvl.skills ? lvl.skills.split(',').map(s => `<span style="background:var(--accent-light); color:var(--accent); padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:600;">${s.trim()}</span>`).join('') : 'N/A'}
                     </div>
                 </div>
 
