@@ -1,15 +1,20 @@
 const DATA = {
     levels: [
-        { id: "atsc", name: "Among the Stars C-Side", points: 2000, img: "atsc.png", code: "hmm" },
-        { id: "tic", name: "The Instant Cheeseless", points: 1750, img: "tic.png", code: "hmm" },
-        // If you add a level here, you don't need to change any IDs!
+        { 
+            id: "atsc", 
+            name: "Among the Stars C-Side", 
+            points: 2000, 
+            img: "assets/atsc.png", // Path to your uploaded file
+            code: "123456", 
+            desc: "The current top-tier challenge." 
+        },
+        // ... more levels
     ],
     players: [
-        { name: "Grassy", completions: ["atsc", "tic"] },
+        { name: "TheGrassyGuys", completions: ["atsc", "tic"] },
         { name: "AppelPro", completions: ["tic"] }
     ]
 };
-
 function showLevelDetails(levelId) {
     const lvl = DATA.levels.find(l => l.id === levelId);
     // Find all players who beat this level
