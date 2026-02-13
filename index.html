@@ -1,109 +1,141 @@
-<script>
-    let activeTags = [];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The List | Levels</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-    function renderLevels() { filterLevels(); }
+    <nav>
+        <a href="index.html" class="active">Levels</a>
+        <a href="leaderboard.html">Leaderboard</a>
+    </nav>
 
-    function toggleTag(tag) {
-        event.currentTarget.classList.toggle('active-tag');
-        activeTags.includes(tag) ? activeTags = activeTags.filter(t => t !== tag) : activeTags.push(tag);
-        filterLevels();
-    }
+    <div id="main-layout">
+        <main id="container">
+            <div class="search-box">
+                <input type="text" id="searchBar" placeholder="Search..." onkeyup="filterLevels()">
+            </div>
+            <div id="list-view"></div>
+        </main>
 
-    function getStatColor(val) {
-        if (!val) return "#86868b";
-        const cleanVal = String(val).split('/')[0].trim();
-        const num = parseFloat(cleanVal);
-        if (isNaN(num)) return "#86868b";
+        <aside id="sidebar">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfgjpCE6e8sHa-GcjVrD27Tcymbc0Q7w2MGdxVTtWnKi-uoXg/viewform?usp=publish-editor" target="_blank" class="submit-btn">Submit Record</a>
+            <h3 style="font-size:0.7rem; color:var(--text-muted); margin-bottom:10px; text-align:left; padding-left:5px;">FILTER SKILLS</h3>
+            <div id="tag-filters">
+                <button class="tag-btn" onclick="toggleTag('Precision')">Precision</button>
+                <button class="tag-btn" onclick="toggleTag('Speedrun')">Speedrun</button>
+                <button class="tag-btn" onclick="toggleTag('Memory')">Memory</button>
+            </div>
+        </aside>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal()" style="position:absolute; right:20px; top:15px; cursor:pointer; font-size:24px; color:#ccc;">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        let activeTags = [];
+
+        // Triggers when spreadsheet data loads
+        function renderLevels() { filterLevels(); }
+
+        function toggleTag(tag) {
+            event.currentTarget.classList.toggle('active-tag');
+            activeTags.includes(tag) ? activeTags = activeTags.filter(t => t !== tag) : activeTags.push(tag);
+            filterLevels();
+        }
+
+        function filterLevels() {
+            const search = document.getElementById('searchBar').value.toLowerCase();
+            if (!window.DATA || !window.DATA.levels) return;
+
+            const filtered = DATA.levels.filter(lvl => {
+                const match = lvl.name.toLowerCase().includes(search) || lvl.author.toLowerCase().includes(search);
+                const tags = activeTags.length === 0 || activeTags.every(t => lvl.skills.includes(t));
+                return match && tags;
+            });
+
+            document.getElementById('list-view').innerHTML = filtered.map((lvl, i) => `
+                <div class="level-entry" onclick="showLevelDetails('${lvl.id}')">
+                    <img class="level-thumb" src="${lvl.img}" onerror="this.src='https://via.placeholder.com/100x75?text=No+Img'">
+                    <div class="level-rank">#${i + 1}</div>
+                    <div class="level-info">
+                        <div class="level-name">${lvl.name}</div>
+                        <div class="level-meta">by ${lvl.author}</div>
+                    </div>
+                    <div class="level-points">${lvl.points}pts</div>
+                </div>`).join('');
+        }
+
+        function showLevelDetails(id) {
+            const lvl = DATA.levels.find(l => l.id === id);
+            const victors = DATA.players.filter(p => p.completions.includes(id));
+            
+            document.getElementById('modal-body').innerHTML = `
+                <div style="width:100%; aspect-ratio: 4 / 3; overflow:hidden; border-radius:15px; margin-bottom:20px; border:1px solid #eee;">
+                    <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'" 
+                         style="width:100%; height:100%; object-fit:cover;">
+                </div>
+
+                <h2 style="margin:0;">${lvl.name}</h2>
+                <p style="color:var(--text-muted); margin-bottom:20px;">By <strong>${lvl.author}</strong></p>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+                    <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
+                        <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Enjoyment</div>
+                        <div style="font-weight:700;">${lvl.enjoyment || 'N/A'}</div>
+                    </div>
+                    <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
+                        <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Quality</div>
+                        <div style="font-weight:700;">${lvl.quality || 'N/A'}</div>
+                    </div>
+                    <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
+                        <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Skill/Effort</div>
+                        <div style="font-weight:700; color:#ff9500;">${lvl.ratio || 'N/A'}</div>
+                    </div>
+                    <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
+                        <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Verifier</div>
+                        <div style="font-weight:700;">${lvl.verifier || 'N/A'}</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h3 style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">Skills Required</h3>
+                    <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                        ${lvl.skills ? lvl.skills.split(',').map(s => `<span style="background:var(--accent-light); color:var(--accent); padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:600;">${s.trim()}</span>`).join('') : 'N/A'}
+                    </div>
+                </div>
+
+                <p style="line-height:1.6; color:#444;">${lvl.desc || "No description provided."}</p>
+                
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                
+                <h3 style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px;">Victors (${victors.length})</h3>
+                <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                    ${victors.length > 0 
+                        ? victors.map(v => `<span style="background:#f0f0f2; padding:5px 12px; border-radius:20px; font-size:0.8rem; font-weight:600;">${v.name}</span>`).join('') 
+                        : '<span style="color:#ccc; font-style:italic;">No victors yet.</span>'}
+                </div>
+            `;
+            document.getElementById('infoModal').style.display = "block";
+            document.body.style.overflow = "hidden"; 
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = "none";
+            document.body.style.overflow = "auto"; 
+        }
         
-        if (num <= 25) return "#800000"; 
-        if (num <= 45) return "#cc0000"; 
-        if (num <= 65) return "#e6ac00"; 
-        if (num <= 85) return "#2eb82e"; 
-        return "#00cc44"; 
-    }
-
-    function filterLevels() {
-        const search = document.getElementById('searchBar').value.toLowerCase();
-        if (!window.DATA || !window.DATA.levels) return;
-
-        const filtered = DATA.levels.filter(lvl => {
-            const match = lvl.name.toLowerCase().includes(search) || lvl.author.toLowerCase().includes(search);
-            const tags = activeTags.length === 0 || activeTags.every(t => lvl.skills.includes(t));
-            return match && tags;
-        });
-
-        document.getElementById('list-view').innerHTML = filtered.map((lvl, i) => `
-            <div class="level-entry" onclick="showLevelDetails('${lvl.id}')">
-                <img class="level-thumb" src="${lvl.img}" onerror="this.src='https://via.placeholder.com/100x75?text=No+Img'">
-                <div class="level-rank">#${i + 1}</div>
-                <div class="level-info">
-                    <div class="level-name">${lvl.name}</div>
-                    <div class="level-meta">by ${lvl.author}</div>
-                </div>
-                <div class="level-points">${lvl.points}pts</div>
-            </div>`).join('');
-    }
-
-    function showLevelDetails(id) {
-        const lvl = DATA.levels.find(l => l.id === id);
-        const victors = DATA.players.filter(p => p.completions.includes(id));
-        
-        document.getElementById('modal-body').innerHTML = `
-            <div style="width:100%; aspect-ratio: 4 / 3; overflow:hidden; border-radius:15px; margin-bottom:20px; border:1px solid #eee;">
-                <img src="${lvl.img}" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'" 
-                     style="width:100%; height:100%; object-fit:cover;">
-            </div>
-
-            <h2 style="margin:0;">${lvl.name}</h2>
-            <p style="color:var(--text-muted); margin-bottom:20px;">By <strong>${lvl.author}</strong></p>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
-                <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
-                    <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Enjoyment</div>
-                    <div style="font-weight:800; font-size:1.1rem; color:${getStatColor(lvl.enjoyment)};">${lvl.enjoyment || 'N/A'}</div>
-                </div>
-                <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
-                    <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Quality</div>
-                    <div style="font-weight:800; font-size:1.1rem; color:${getStatColor(lvl.quality)};">${lvl.quality || 'N/A'}</div>
-                </div>
-                <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
-                    <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Skill/Effort</div>
-                    <div style="font-weight:700; color:#ff9500;">${lvl.ratio || 'N/A'}</div>
-                </div>
-                <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
-                    <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Verifier</div>
-                    <div style="font-weight:700;">${lvl.verifier || 'N/A'}</div>
-                </div>
-            </div>
-
-            <div style="margin-bottom:20px;">
-                <h3 style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">Skills Required</h3>
-                <div style="display:flex; flex-wrap:wrap; gap:5px;">
-                    ${lvl.skills ? lvl.skills.split(',').map(s => `<span style="background:var(--accent-light); color:var(--accent); padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:600;">${s.trim()}</span>`).join('') : 'N/A'}
-                </div>
-            </div>
-
-            <p style="line-height:1.6; color:#444;">${lvl.desc || "No description provided."}</p>
-            
-            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-            
-            <h3 style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px;">Victors (${victors.length})</h3>
-            <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                ${victors.length > 0 
-                    ? victors.map(v => `<span style="background:#f0f0f2; padding:5px 12px; border-radius:20px; font-size:0.8rem; font-weight:600;">${v.name}</span>`).join('') 
-                    : '<span style="color:#ccc; font-style:italic;">No victors yet.</span>'}
-            </div>
-        `;
-        document.getElementById('infoModal').style.display = "block";
-        document.body.style.overflow = "hidden"; 
-    }
-
-    function closeModal() {
-        document.getElementById('infoModal').style.display = "none";
-        document.body.style.overflow = "auto"; 
-    }
-    
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('infoModal')) closeModal();
-    }
-</script>
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('infoModal')) closeModal();
+        }
+    </script>
+</body>
+</html>
