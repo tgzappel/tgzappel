@@ -21,42 +21,51 @@
         </div>
         
         <div id="leaderboard-list">
-            </div>
+            <p style="text-align:center; color:var(--text-muted);">Loading player data...</p>
+        </div>
     </div>
 
     <script src="data.js"></script>
     <script>
         let leaderboard = [];
 
-        // This function is called by data.js once the spreadsheet is loaded
+        // 1. This is the function data.js looks for
         function renderLevels() {
-            calculateLeaderboard();
+            initLeaderboard();
         }
 
-        function calculateLeaderboard() {
-            if (!window.DATA || !window.DATA.players || !window.DATA.levels) return;
+        // 2. This does the math
+        function initLeaderboard() {
+            if (!window.DATA || !window.DATA.players || !window.DATA.levels) {
+                console.error("Data not found yet");
+                return;
+            }
 
             leaderboard = DATA.players.map(p => {
                 let totalPoints = 0;
-                // Match completions to level points
-                p.completions.forEach(levelId => {
-                    const foundLevel = DATA.levels.find(l => l.id.toLowerCase().trim() === levelId.toLowerCase().trim());
+                // Safely handle completions
+                const completions = Array.isArray(p.completions) ? p.completions : [];
+                
+                completions.forEach(levelId => {
+                    const foundLevel = DATA.levels.find(l => 
+                        String(l.id).toLowerCase().trim() === String(levelId).toLowerCase().trim()
+                    );
                     if (foundLevel) {
-                        totalPoints += foundLevel.points;
+                        totalPoints += parseFloat(foundLevel.points) || 0;
                     }
                 });
                 return { 
                     name: p.name, 
-                    count: p.completions.length, 
+                    count: completions.length, 
                     points: totalPoints 
                 };
             })
-            // Sort by points (highest first)
             .sort((a, b) => b.points - a.points);
 
             renderLeaderboard();
         }
 
+        // 3. This draws the list on the screen
         function renderLeaderboard() {
             const search = document.getElementById('pSearch').value.toLowerCase();
             const filtered = leaderboard.filter(p => p.name.toLowerCase().includes(search));
@@ -79,13 +88,10 @@
                 </div>`).join('');
         }
 
-        // Emergency backup: If renderLevels doesn't trigger, try every second until data is found
-        const retryInterval = setInterval(() => {
-            if (window.DATA && window.DATA.players) {
-                calculateLeaderboard();
-                clearInterval(retryInterval);
-            }
-        }, 1000);
+        // 4. FAIL-SAFE: If the data script loaded before this script, run it now
+        window.onload = () => {
+            if (window.DATA) initLeaderboard();
+        };
     </script>
 </body>
 </html>
