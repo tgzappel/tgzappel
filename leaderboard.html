@@ -30,55 +30,89 @@
     <script src="data.js"></script>
     <script>
         function renderLevels() {
-            if (!window.DATA || !window.DATA.players) return;
-            const search = document.getElementById('pSearch').value.toLowerCase();
-            
-            const list = DATA.players.map(p => {
-                let pts = 0;
-                p.completions.forEach(id => {
-                    const l = DATA.levels.find(lvl => String(lvl.id).trim() === String(id).trim());
-                    if (l) pts += parseFloat(l.points) || 0;
-                });
-                return { name: p.name, pts: pts, count: p.completions.length };
-            })
-            .filter(p => p.name.toLowerCase().includes(search))
-            .sort((a,b) => b.pts - a.pts);
+    if (!window.DATA || !window.DATA.players || !window.DATA.levels) return;
+    const search = document.getElementById('pSearch').value.toLowerCase();
+    
+    const list = DATA.players.map(p => {
+        let pts = 0;
+        let validComps = 0;
 
-            document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => {
-                // Medal Logic
-                let rankDisplay = `#${i + 1}`;
-                if (i === 0) rankDisplay = "🥇";
-                if (i === 1) rankDisplay = "🥈";
-                if (i === 2) rankDisplay = "🥉";
+        p.completions.forEach(compId => {
+            // Normalize ID for matching
+            const cleanId = String(compId).trim();
+            const foundLevel = DATA.levels.find(lvl => String(lvl.id).trim() === cleanId);
 
-                return `
-                <div class="level-entry" onclick="showPlayerDetails('${p.name}')">
-                    <div class="level-rank" style="font-size: 1.4rem;">${rankDisplay}</div>
-                    <div class="level-info"><b>${p.name}</b><br><small>${p.count} completions</small></div>
-                    <div class="level-points">${p.pts.toLocaleString()} pts</div>
-                </div>`;
-            }).join('');
+            if (foundLevel) {
+                pts += parseFloat(foundLevel.points) || 0;
+                validComps++;
+            }
+        });
+
+        return { name: p.name, pts: pts, count: validComps };
+    })
+    .filter(p => p.name.toLowerCase().includes(search))
+    .sort((a, b) => b.pts - a.pts);
+
+    document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => {
+        let rankDisplay = `#${i + 1}`;
+        if (i === 0) rankDisplay = "🥇";
+        if (i === 1) rankDisplay = "🥈";
+        if (i === 2) rankDisplay = "🥉";
+
+        return `
+        <div class="level-entry" onclick="showPlayerDetails('${p.name.replace(/'/g, "\\'")}')">
+            <div class="level-rank">${rankDisplay}</div>
+            <div class="level-info">
+                <b>${p.name}</b><br>
+                <small>${p.count} completions</small>
+            </div>
+            <div class="level-points">${p.pts.toLocaleString()} pts</div>
+        </div>`;
+    }).join('');
+}
+
+function showPlayerDetails(playerName) {
+    const player = DATA.players.find(p => p.name === playerName);
+    if (!player) return;
+
+    // The Fix: Ensure the modal uses the exact same cleaning logic as the points calculation
+    const comps = player.completions.map(compId => {
+        const cleanId = String(compId).trim();
+        
+        // Find the index of the level in the master list to get its rank
+        const idx = DATA.levels.findIndex(l => String(l.id).trim() === cleanId);
+        
+        if (idx !== -1) {
+            return { 
+                rank: idx + 1, 
+                name: DATA.levels[idx].name.trim() 
+            };
         }
+        return null;
+    })
+    .filter(x => x !== null) // Remove failed matches
+    .sort((a, b) => a.rank - b.rank); // Sort by rank (#1 first)
 
-        function showPlayerDetails(playerName) {
-            const player = DATA.players.find(p => p.name === playerName);
-            const comps = player.completions.map(id => {
-                const idx = DATA.levels.findIndex(l => String(l.id).trim() === String(id).trim());
-                return idx !== -1 ? { rank: idx + 1, name: DATA.levels[idx].name } : null;
-            }).filter(x => x).sort((a,b) => a.rank - b.rank);
+    document.getElementById('player-modal-body').innerHTML = `
+        <h2 style="margin-top:0;">${player.name}</h2>
+        <p style="color:var(--text-muted); margin-bottom:15px;">Total Completions: <b>${comps.length}</b></p>
+        <div style="max-height: 400px; overflow-y: auto; border-top: 1px solid #eee;">
+            ${comps.map(c => `
+                <div style="padding:12px 10px; border-bottom:1px solid #f9f9f9; display:flex; gap:10px;">
+                    <b style="color:var(--text-muted); min-width:35px;">#${c.rank}</b>
+                    <span>${c.name}</span>
+                </div>`).join('')}
+            ${comps.length === 0 ? '<p style="padding:20px; color:#ccc; text-align:center;">No completions found.</p>' : ''}
+        </div>`;
+    
+    document.getElementById('playerModal').style.display = "block";
+    document.body.style.overflow = "hidden";
+}
 
-            document.getElementById('player-modal-body').innerHTML = `
-                <h2>${player.name}</h2>
-                <div style="max-height: 400px; overflow-y: auto;">
-                    ${comps.map(c => `
-                        <div style="padding:10px; border-bottom:1px solid #eee;">
-                            <b>#${c.rank}</b> — ${c.name}
-                        </div>`).join('')}
-                </div>`;
-            document.getElementById('playerModal').style.display = "block";
-            document.body.style.overflow = "hidden";
-        }
-        function closePlayerModal() { document.getElementById('playerModal').style.display="none"; document.body.style.overflow="auto"; }
+function closePlayerModal() { 
+    document.getElementById('playerModal').style.display="none"; 
+    document.body.style.overflow="auto"; 
+}
     </script>
 </body>
 </html>
