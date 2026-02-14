@@ -10,19 +10,27 @@ async function fetchData() {
         const pT = await pR.text();
 
         window.DATA.levels = parseCSV(lT);
+        
+        // Sanitize Players and their completions
         window.DATA.players = parseCSV(pT).map(p => ({
             ...p,
-            completions: p.completions ? p.completions.split(',').map(s => s.trim()) : []
+            // Split by comma, then trim spaces and filter out empty strings
+            completions: p.completions 
+                ? p.completions.split(',').map(s => s.trim()).filter(s => s !== "") 
+                : []
         }));
 
         if (typeof renderLevels === 'function') renderLevels();
-    } catch (e) { console.error("Error loading CSV:", e); }
+    } catch (e) { 
+        console.error("Data fetch error:", e); 
+    }
 }
 
 function parseCSV(csv) {
     const lines = csv.split('\n');
     const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
     return lines.slice(1).filter(l => l.trim()).map(l => {
+        // Advanced regex to handle commas inside quotes
         const v = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(x => x.replace(/^"|"$/g, '').trim());
         const o = {};
         headers.forEach((h, i) => o[h] = v[i]);
