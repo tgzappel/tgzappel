@@ -11,14 +11,20 @@ async function fetchData() {
 
         window.DATA.levels = parseCSV(lT);
         
-        // Sanitize Players and their completions
-        window.DATA.players = parseCSV(pT).map(p => ({
-            ...p,
-            // Split by comma, then trim spaces and filter out empty strings
-            completions: p.completions 
-                ? p.completions.split(',').map(s => s.trim()).filter(s => s !== "") 
-                : []
-        }));
+        window.DATA.players = parseCSV(pT).map(p => {
+            // This is the critical fix: 
+            // 1. We remove hidden line breaks (\r and \n)
+            // 2. We split by commas
+            // 3. We trim spaces from every single ID
+            const cleanCompletions = p.completions 
+                ? p.completions.replace(/[\r\n]+/g, '').split(',').map(s => s.trim()).filter(s => s !== "") 
+                : [];
+                
+            return {
+                ...p,
+                completions: cleanCompletions
+            };
+        });
 
         if (typeof renderLevels === 'function') renderLevels();
     } catch (e) { 
@@ -28,12 +34,15 @@ async function fetchData() {
 
 function parseCSV(csv) {
     const lines = csv.split('\n');
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const headers = lines[0].replace(/[\r\n]+/g, '').split(',').map(h => h.trim().toLowerCase());
+    
     return lines.slice(1).filter(l => l.trim()).map(l => {
-        // Advanced regex to handle commas inside quotes
         const v = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(x => x.replace(/^"|"$/g, '').trim());
         const o = {};
-        headers.forEach((h, i) => o[h] = v[i]);
+        headers.forEach((h, i) => {
+            // We also clean the values themselves to be safe
+            o[h] = v[i] ? v[i].replace(/[\r\n]+/g, '').trim() : "";
+        });
         return o;
     });
 }
