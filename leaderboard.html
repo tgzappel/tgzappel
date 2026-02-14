@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,13 +11,16 @@
             <a href="leaderboard.html" class="active">Leaderboard</a>
         </div>
     </nav>
-    <div style="max-width:800px; margin:20px auto; padding:20px;">
-        <h1 style="text-align:center;">Leaderboard</h1>
+
+    <div id="container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
+        <h1 style="text-align:center;">Top Players</h1>
         <div id="leaderboard-list"></div>
     </div>
+
     <script src="data.js"></script>
     <script>
         function renderLevels() {
+            if (!window.DATA) return;
             const list = DATA.players.map(p => {
                 let pts = 0;
                 p.completions.forEach(id => {
@@ -29,9 +32,9 @@
 
             document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => `
                 <div class="level-entry" style="cursor:default">
-                    <div style="width:40px; font-weight:800;">#${i+1}</div>
-                    <div style="flex-grow:1;"><b>${p.name}</b><br><small>${p.count} clears</small></div>
-                    <div style="font-weight:700; color:var(--accent);">${p.pts.toLocaleString()} pts</div>
+                    <div class="level-rank">#${i+1}</div>
+                    <div class="level-info"><b>${p.name}</b><br><small>${p.count} completions</small></div>
+                    <div class="level-points">${p.pts.toLocaleString()} pts</div>
                 </div>`).join('');
         }
     </script>
