@@ -11,32 +11,27 @@
             <a href="leaderboard.html" class="active">Leaderboard</a>
         </div>
     </nav>
-
-    <div id="container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
-        <h1 style="text-align:center;">Top Players</h1>
+    <div style="max-width:800px; margin:20px auto; padding:20px;">
+        <h1 style="text-align:center;">Leaderboard</h1>
         <div id="leaderboard-list"></div>
     </div>
-
     <script src="data.js"></script>
     <script>
-        let leaderboard = [];
-        function initLeaderboard() {
-            leaderboard = DATA.players.map(p => {
+        function renderLevels() {
+            const list = DATA.players.map(p => {
                 let pts = 0;
                 p.completions.forEach(id => {
                     const l = DATA.levels.find(lvl => String(lvl.id).trim() === String(id).trim());
                     if (l) pts += parseFloat(l.points) || 0;
                 });
-                return { name: p.name, count: p.completions.length, points: pts };
-            }).sort((a,b) => b.points - a.points);
-            renderLeaderboard();
-        }
-        function renderLeaderboard() {
-            document.getElementById('leaderboard-list').innerHTML = leaderboard.map((p, i) => `
+                return { name: p.name, pts: pts, count: p.completions.length };
+            }).sort((a,b) => b.pts - a.pts);
+
+            document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => `
                 <div class="level-entry" style="cursor:default">
-                    <div class="level-rank">#${i + 1}</div>
-                    <div class="level-info"><b>${p.name}</b><br><small>${p.count} clears</small></div>
-                    <div class="level-points">${p.points.toLocaleString()} pts</div>
+                    <div style="width:40px; font-weight:800;">#${i+1}</div>
+                    <div style="flex-grow:1;"><b>${p.name}</b><br><small>${p.count} clears</small></div>
+                    <div style="font-weight:700; color:var(--accent);">${p.pts.toLocaleString()} pts</div>
                 </div>`).join('');
         }
     </script>
