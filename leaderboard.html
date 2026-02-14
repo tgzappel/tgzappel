@@ -14,12 +14,15 @@
 
     <div id="container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
         <h1 style="text-align:center;">Top Players</h1>
+        <div class="search-box">
+            <input type="text" id="pSearch" placeholder="Search player..." onkeyup="renderLevels()">
+        </div>
         <div id="leaderboard-list"></div>
     </div>
 
     <div id="playerModal" class="modal">
         <div class="modal-content">
-            <span onclick="closePlayerModal()" style="position:absolute; right:20px; top:15px; cursor:pointer; font-size:24px; color:#ccc;">&times;</span>
+            <span onclick="closePlayerModal()" style="position:absolute; right:20px; top:15px; cursor:pointer; font-size:24px;">&times;</span>
             <div id="player-modal-body"></div>
         </div>
     </div>
@@ -28,72 +31,43 @@
     <script>
         function renderLevels() {
             if (!window.DATA || !window.DATA.players) return;
-
+            const search = document.getElementById('pSearch').value.toLowerCase();
+            
             const list = DATA.players.map(p => {
                 let pts = 0;
                 p.completions.forEach(id => {
                     const l = DATA.levels.find(lvl => String(lvl.id).trim() === String(id).trim());
                     if (l) pts += parseFloat(l.points) || 0;
                 });
-                return { name: p.name, pts: pts, count: p.completions.length, rawCompletions: p.completions };
-            }).sort((a,b) => b.pts - a.pts);
+                return { name: p.name, pts: pts, count: p.completions.length };
+            })
+            .filter(p => p.name.toLowerCase().includes(search))
+            .sort((a,b) => b.pts - a.pts);
 
             document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => `
                 <div class="level-entry" onclick="showPlayerDetails('${p.name}')">
                     <div class="level-rank">#${i+1}</div>
-                    <div class="level-info">
-                        <b>${p.name}</b><br>
-                        <small>${p.count} completions</small>
-                    </div>
+                    <div class="level-info"><b>${p.name}</b><br><small>${p.count} completions</small></div>
                     <div class="level-points">${p.pts.toLocaleString()} pts</div>
                 </div>`).join('');
         }
 
         function showPlayerDetails(playerName) {
             const player = DATA.players.find(p => p.name === playerName);
-            if (!player) return;
-
-            // Get level details for each completion
-            const completionDetails = player.completions.map(id => {
-                // Find the level object
-                const levelIndex = DATA.levels.findIndex(l => String(l.id).trim() === String(id).trim());
-                if (levelIndex === -1) return null;
-                
-                return {
-                    rank: levelIndex + 1, // Assumes DATA.levels is already sorted by rank
-                    name: DATA.levels[levelIndex].name
-                };
-            }).filter(item => item !== null)
-              .sort((a, b) => a.rank - b.rank); // Sort by rank (#1 first)
-
-            const listHtml = completionDetails.map(c => `
-                <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
-                    <span style="font-weight: 800; color: var(--text-muted); width: 50px;">#${c.rank}</span>
-                    <span style="flex-grow: 1; font-weight: 600;">${c.name}</span>
-                </div>
-            `).join('');
+            const comps = player.completions.map(id => {
+                const idx = DATA.levels.findIndex(l => String(l.id).trim() === String(id).trim());
+                return idx !== -1 ? { rank: idx + 1, name: DATA.levels[idx].name } : null;
+            }).filter(x => x).sort((a,b) => a.rank - b.rank);
 
             document.getElementById('player-modal-body').innerHTML = `
-                <h2 style="margin-top:0;">${player.name}</h2>
-                <p style="color:var(--text-muted); margin-bottom:20px;">Total Completions: <strong>${completionDetails.length}</strong></p>
-                <div style="max-height: 400px; overflow-y: auto; border-top: 1px solid #eee;">
-                    ${listHtml || '<p style="color:#ccc;">No completions found.</p>'}
-                </div>
-            `;
-
+                <h2>${player.name}</h2>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${comps.map(c => `<div style="padding:10px; border-bottom:1px solid #eee;"><b>#${c.rank}</b> — ${c.name}</div>`).join('')}
+                </div>`;
             document.getElementById('playerModal').style.display = "block";
             document.body.style.overflow = "hidden";
         }
-
-        function closePlayerModal() {
-            document.getElementById('playerModal').style.display = "none";
-            document.body.style.overflow = "auto";
-        }
-
-        // Close when clicking outside
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('playerModal')) closePlayerModal();
-        }
+        function closePlayerModal() { document.getElementById('playerModal').style.display="none"; document.body.style.overflow="auto"; }
     </script>
 </body>
 </html>
