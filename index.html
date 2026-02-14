@@ -14,12 +14,11 @@
 
     <div id="main-layout">
         <main>
-            <input type="text" id="searchBar" placeholder="Search levels..." onkeyup="filterLevels()" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ddd; margin-bottom:20px;">
+            <input type="text" id="searchBar" placeholder="Search..." onkeyup="filterLevels()" style="width:100%; padding:12px; margin-bottom:20px; border-radius:8px; border:1px solid #ddd;">
             <div id="list-view"></div>
         </main>
-
         <aside id="sidebar">
-            <h3 style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px;">Filter Skills</h3>
+            <h3 style="font-size:0.7rem; color:var(--text-muted);">FILTER SKILLS</h3>
             <div id="tag-filters">
                 <button class="tag-btn" onclick="toggleTag('Blues')">Blues</button>
                 <button class="tag-btn" onclick="toggleTag('Chokepoint')">Chokepoint</button>
@@ -59,17 +58,15 @@
     <script>
         let activeTags = [];
         function renderLevels() { filterLevels(); }
-        function toggleTag(tag) {
-            event.currentTarget.classList.toggle('active-tag');
-            activeTags.includes(tag) ? activeTags = activeTags.filter(t => t !== tag) : activeTags.push(tag);
-            filterLevels();
-        }
-
+        
         function getStatColor(val) {
             const num = parseFloat(String(val).split('/')[0]);
-            if (isNaN(num)) return "#86868b";
-            if (num <= 25) return "#800000"; if (num <= 45) return "#cc0000"; 
-            if (num <= 65) return "#e6ac00"; if (num <= 85) return "#2eb82e"; return "#00cc44";
+            if (isNaN(num)) return "#000";
+            if (num <= 25) return "#800000"; // Maroon
+            if (num <= 45) return "#cc0000"; // Red
+            if (num <= 65) return "#e6ac00"; // Yellow
+            if (num <= 85) return "#2eb82e"; // Green
+            return "#00cc44"; // Bright Green
         }
 
         function filterLevels() {
@@ -82,9 +79,8 @@
             document.getElementById('list-view').innerHTML = filtered.map((lvl, i) => `
                 <div class="level-entry" onclick="showLevelDetails('${lvl.id}')">
                     <img class="level-thumb" src="${lvl.img}">
-                    <div class="level-rank">#${i + 1}</div>
-                    <div class="level-info"><div class="level-name">${lvl.name}</div><div class="level-meta">by ${lvl.author}</div></div>
-                    <div class="level-points">${lvl.points}pts</div>
+                    <div class="level-info"><b>${lvl.name}</b><br><small>by ${lvl.author}</small></div>
+                    <div style="color:var(--accent); font-weight:700;">${lvl.points}pts</div>
                 </div>`).join('');
         }
 
@@ -92,23 +88,24 @@
             const lvl = DATA.levels.find(l => l.id === id);
             const victors = DATA.players.filter(p => p.completions.includes(id));
             document.getElementById('modal-body').innerHTML = `
-                <div style="width:100%; aspect-ratio:4/3; overflow:hidden; border-radius:15px; margin-bottom:20px;">
+                <div style="width:100%; aspect-ratio:4/3; overflow:hidden; border-radius:12px; margin-bottom:15px;">
                     <img src="${lvl.img}" style="width:100%; height:100%; object-fit:cover;">
                 </div>
-                <h2>${lvl.name}</h2><p>By ${lvl.author}</p>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin:20px 0;">
-                    <div style="background:#f5f5f7; padding:10px; border-radius:10px;">Enjoyment: <b style="color:${getStatColor(lvl.enjoyment)}">${lvl.enjoyment}</b></div>
-                    <div style="background:#f5f5f7; padding:10px; border-radius:10px;">Quality: <b style="color:${getStatColor(lvl.quality)}">${lvl.quality}</b></div>
-                    <div style="background:#f5f5f7; padding:10px; border-radius:10px;">Skill/Effort: <b>${lvl.ratio}</b></div>
-                    <div style="background:#f5f5f7; padding:10px; border-radius:10px;">Verifier: <b>${lvl.verifier}</b></div>
+                <h2>${lvl.name}</h2>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:15px 0;">
+                    <div style="background:#f9f9f9; padding:10px; border-radius:8px;">Enjoyment: <b style="color:${getStatColor(lvl.enjoyment)}">${lvl.enjoyment}</b></div>
+                    <div style="background:#f9f9f9; padding:10px; border-radius:8px;">Quality: <b style="color:${getStatColor(lvl.quality)}">${lvl.quality}</b></div>
+                    <div style="background:#f9f9f9; padding:10px; border-radius:8px;">Skill/Effort: <b style="color:#000">${lvl.ratio}</b></div>
+                    <div style="background:#f9f9f9; padding:10px; border-radius:8px;">Verifier: <b>${lvl.verifier}</b></div>
                 </div>
+                <p><b>Skills:</b> ${lvl.skills}</p>
                 <p>${lvl.desc || ""}</p>
                 <hr><p><b>Victors:</b> ${victors.map(v => v.name).join(', ') || "None"}</p>
             `;
             document.getElementById('infoModal').style.display = "block";
-            document.body.style.overflow = "hidden";
+            document.body.style.overflow = "hidden"; // Freeze background
         }
-        function closeModal() { document.getElementById('infoModal').style.display="none"; document.body.style.overflow="auto"; }
+        function closeModal() { document.getElementById('infoModal').style.display = "none"; document.body.style.overflow = "auto"; }
     </script>
 </body>
 </html>
