@@ -26,29 +26,8 @@
             <h3 style="font-size:0.7rem; color:var(--text-muted); margin-bottom:10px; text-align:left; padding-left:5px;">FILTER SKILLS</h3>
             <div id="tag-filters">
                 <button class="tag-btn" onclick="toggleTag('Precision')">Precision</button>
-                <button class="tag-btn" onclick="toggleTag('Routing')">Routing</button>
                 <button class="tag-btn" onclick="toggleTag('Speedrun')">Speedrun</button>
                 <button class="tag-btn" onclick="toggleTag('Memory')">Memory</button>
-                <button class="tag-btn" onclick="toggleTag('Gerald Gameplay')">Gerald Gameplay</button>
-                <button class="tag-btn" onclick="toggleTag('Keydoor')">Keydoor</button>
-                <button class="tag-btn" onclick="toggleTag('Kaizo')">Kaizo</button>
-                <button class="tag-btn" onclick="toggleTag('Crusher')">Crusher</button>
-                <button class="tag-btn" onclick="toggleTag('Technical')">Technical</button>
-                <button class="tag-btn" onclick="toggleTag('Trampoline')">Trampoline</button>
-                <button class="tag-btn" onclick="toggleTag('Strategy')">Strategy</button>
-                <button class="tag-btn" onclick="toggleTag('Crumble')">Crumble</button>
-                <button class="tag-btn" onclick="toggleTag('Spikedges')">Spikedges</button>
-                <button class="tag-btn" onclick="toggleTag('Litejumps')">Litejumps</button>
-                <button class="tag-btn" onclick="toggleTag('Needle Gameplay')">Needle Gameplay</button>
-                <button class="tag-btn" onclick="toggleTag('Chokepoint')">Chokepoint</button>
-                <button class="tag-btn" onclick="toggleTag('Momentum Control')">Momentum Control</button>
-                <button class="tag-btn" onclick="toggleTag('Sidejumps')">Sidejumps</button>
-                <button class="tag-btn" onclick="toggleTag('Walljumps')">Walljumps</button>
-                <button class="tag-btn" onclick="toggleTag('Mob')">Mob</button>
-                <button class="tag-btn" onclick="toggleTag('Endurance')">Endurance</button>
-                <button class="tag-btn" onclick="toggleTag('Crouch Spam')">Crouch Spam</button>
-                <button class="tag-btn" onclick="toggleTag('Blues')">Blues</button>
-
             </div>
         </aside>
     </div>
@@ -64,13 +43,28 @@
     <script>
         let activeTags = [];
 
-        // Triggers when spreadsheet data loads
+        // This function is triggered by data.js
         function renderLevels() { filterLevels(); }
 
         function toggleTag(tag) {
             event.currentTarget.classList.toggle('active-tag');
             activeTags.includes(tag) ? activeTags = activeTags.filter(t => t !== tag) : activeTags.push(tag);
             filterLevels();
+        }
+
+        // Color Logic for 0-100 stats
+        function getStatColor(val) {
+            if (!val) return "#86868b";
+            // Cleans "80/100" into "80"
+            const cleanVal = String(val).split('/')[0].trim();
+            const num = parseFloat(cleanVal);
+            if (isNaN(num)) return "#86868b";
+            
+            if (num <= 25) return "#800000"; // Maroon
+            if (num <= 45) return "#cc0000"; // Red
+            if (num <= 65) return "#e6ac00"; // Gold
+            if (num <= 85) return "#2eb82e"; // Green
+            return "#00cc44"; // Bright Green
         }
 
         function filterLevels() {
@@ -111,15 +105,15 @@
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
                     <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
                         <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Enjoyment</div>
-                        <div style="font-weight:700;">${lvl.enjoyment || 'N/A'}</div>
+                        <div style="font-weight:800; font-size:1.1rem; color:${getStatColor(lvl.enjoyment)};">${lvl.enjoyment || 'N/A'}</div>
                     </div>
                     <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
                         <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Quality</div>
-                        <div style="font-weight:700;">${lvl.quality || 'N/A'}</div>
+                        <div style="font-weight:800; font-size:1.1rem; color:${getStatColor(lvl.quality)};">${lvl.quality || 'N/A'}</div>
                     </div>
                     <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
                         <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Skill/Effort</div>
-                        <div style="font-weight:700; color:#ff9500;">${lvl.ratio || 'N/A'}</div>
+                        <div style="font-weight:800; font-size:1.1rem; color:#000000;">${lvl.ratio || 'N/A'}</div>
                     </div>
                     <div style="background:#f5f5f7; padding:12px; border-radius:12px;">
                         <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Verifier</div>
@@ -146,14 +140,15 @@
                 </div>
             `;
             document.getElementById('infoModal').style.display = "block";
-            document.body.style.overflow = "hidden"; 
+            document.body.style.overflow = "hidden"; // Freeze background scroll
         }
 
         function closeModal() {
             document.getElementById('infoModal').style.display = "none";
-            document.body.style.overflow = "auto"; 
+            document.body.style.overflow = "auto"; // Re-enable background scroll
         }
         
+        // Close modal when clicking outside
         window.onclick = function(event) {
             if (event.target == document.getElementById('infoModal')) closeModal();
         }
