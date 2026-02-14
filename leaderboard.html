@@ -1,97 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard | Rankings</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav>
-        <a href="index.html">Levels</a>
-        <a href="leaderboard.html" class="active">Leaderboard</a>
+        <a href="index.html"><img src="The.png" class="nav-logo"></a>
+        <div class="nav-links">
+            <a href="index.html">Levels</a>
+            <a href="leaderboard.html" class="active">Leaderboard</a>
+        </div>
     </nav>
 
-    <div id="container" style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
-        <h1 style="text-align:center; font-size:2.5rem; margin-bottom:10px;">Top Players</h1>
-        <p style="text-align:center; color:var(--text-muted); margin-bottom:30px;">Rankings based on total points from completed levels.</p>
-        
-        <div class="search-box">
-            <input type="text" id="pSearch" placeholder="Search for a player..." onkeyup="renderLeaderboard()">
-        </div>
-        
-        <div id="leaderboard-list">
-            <p style="text-align:center; color:var(--text-muted);">Loading player data...</p>
-        </div>
+    <div id="container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
+        <h1 style="text-align:center;">Top Players</h1>
+        <div id="leaderboard-list"></div>
     </div>
 
     <script src="data.js"></script>
     <script>
         let leaderboard = [];
-
-        // 1. This is the function data.js looks for
-        function renderLevels() {
-            initLeaderboard();
-        }
-
-        // 2. This does the math
         function initLeaderboard() {
-            if (!window.DATA || !window.DATA.players || !window.DATA.levels) {
-                console.error("Data not found yet");
-                return;
-            }
-
             leaderboard = DATA.players.map(p => {
-                let totalPoints = 0;
-                // Safely handle completions
-                const completions = Array.isArray(p.completions) ? p.completions : [];
-                
-                completions.forEach(levelId => {
-                    const foundLevel = DATA.levels.find(l => 
-                        String(l.id).toLowerCase().trim() === String(levelId).toLowerCase().trim()
-                    );
-                    if (foundLevel) {
-                        totalPoints += parseFloat(foundLevel.points) || 0;
-                    }
+                let pts = 0;
+                p.completions.forEach(id => {
+                    const l = DATA.levels.find(lvl => String(lvl.id).trim() === String(id).trim());
+                    if (l) pts += parseFloat(l.points) || 0;
                 });
-                return { 
-                    name: p.name, 
-                    count: completions.length, 
-                    points: totalPoints 
-                };
-            })
-            .sort((a, b) => b.points - a.points);
-
+                return { name: p.name, count: p.completions.length, points: pts };
+            }).sort((a,b) => b.points - a.points);
             renderLeaderboard();
         }
-
-        // 3. This draws the list on the screen
         function renderLeaderboard() {
-            const search = document.getElementById('pSearch').value.toLowerCase();
-            const filtered = leaderboard.filter(p => p.name.toLowerCase().includes(search));
-            
-            const listElement = document.getElementById('leaderboard-list');
-            
-            if (filtered.length === 0) {
-                listElement.innerHTML = `<p style="text-align:center; color:var(--text-muted);">No players found.</p>`;
-                return;
-            }
-
-            listElement.innerHTML = filtered.map((p, i) => `
-                <div class="level-entry" style="cursor:default; margin-bottom:10px;">
+            document.getElementById('leaderboard-list').innerHTML = leaderboard.map((p, i) => `
+                <div class="level-entry" style="cursor:default">
                     <div class="level-rank">#${i + 1}</div>
-                    <div class="level-info">
-                        <div class="level-name">${p.name}</div>
-                        <div class="level-meta">${p.count} levels completed</div>
-                    </div>
-                    <div class="level-points" style="font-size:1.2rem;">${p.points.toLocaleString()} pts</div>
+                    <div class="level-info"><b>${p.name}</b><br><small>${p.count} clears</small></div>
+                    <div class="level-points">${p.points.toLocaleString()} pts</div>
                 </div>`).join('');
         }
-
-        // 4. FAIL-SAFE: If the data script loaded before this script, run it now
-        window.onload = () => {
-            if (window.DATA) initLeaderboard();
-        };
     </script>
 </body>
 </html>
