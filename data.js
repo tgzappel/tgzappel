@@ -16,7 +16,7 @@ async function fetchData() {
         }));
 
         if (typeof renderLevels === 'function') renderLevels();
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Error loading CSV:", e); }
 }
 
 function parseCSV(csv) {
