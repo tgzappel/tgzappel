@@ -1,35 +1,63 @@
-/*unc*/
-const LEVELS_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAr2BhXbwr5ApU9nFjskDz_S-8Q7my0UCzxa62AMNVBiJD1yiSZgiYdGYYad765gDsjDpuR34zb3rv/pub?gid=0&output=csv";
-const PLAYERS_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAr2BhXbwr5ApU9nFjskDz_S-8Q7my0UCzxa62AMNVBiJD1yiSZgiYdGYYad765gDsjDpuR34zb3rv/pub?gid=2037985449&output=csv";
+// The data object that index and leaderboard will use
+window.DATA = {
+    levels: [],
+    players: []
+};
 
-window.DATA = { levels: [], players: [] };
+async function fetchData() {
+    const levelsUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAr2BhXbwr5ApU9nFjskDz_S-8Q7my0UCzxa62AMNVBiJD1yiSZgiYdGYYad765gDsjDpuR34zb3rv/pub?gid=0&single=true&output=csv";
+    const playersUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSAr2BhXbwr5ApU9nFjskDz_S-8Q7my0UCzxa62AMNVBiJD1yiSZgiYdGYYad765gDsjDpuR34zb3rv/pub?gid=645186334&single=true&output=csv";
 
-async function fetchAllData() {
     try {
-        const [resL, resP] = await Promise.all([fetch(LEVELS_CSV), fetch(PLAYERS_CSV)]);
-        const parseCSV = (text) => {
-            const rows = text.split(/\r?\n/).slice(1);
-            return rows.filter(r => r.trim() !== "").map(row => 
-                row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(col => col.replace(/^"|"$/g, '').trim())
-            );
-        };
+        // Fetch both CSVs at the same time
+        const [levelsRes, playersRes] = await Promise.all([
+            fetch(levelsUrl),
+            fetch(playersUrl)
+        ]);
 
-        const lData = parseCSV(await resL.text());
-        const pData = parseCSV(await resP.text());
+        const levelsText = await levelsRes.text();
+        const playersText = await playersRes.text();
 
-        window.DATA.levels = lData.map(c => ({
-            id: c[0], name: c[1], author: c[2], verifier: c[3] || "N/A",
-            skills: c[4] || "", enjoyment: c[5] || "N/A", ratio: c[6] || "N/A",
-            quality: c[7] || "N/A", points: parseInt(c[8]) || 0, img: c[9],
-            location: c[10], desc: c[11]
+        // Convert CSV text to usable Objects
+        window.DATA.levels = parseCSV(levelsText);
+        window.DATA.players = parseCSV(playersText).map(p => ({
+            ...p,
+            // Convert "Level1, Level2" string into a clean Array
+            completions: p.completions ? p.completions.split(',').map(s => s.trim()) : []
         }));
 
-        window.DATA.players = pData.map(c => ({
-            name: c[0], completions: c[1] ? c[1].split(',').map(s => s.trim()) : []
-        }));
+        console.log("Data Loaded Successfully:", window.DATA);
 
-        if (typeof renderLevels === "function") renderLevels();
-        if (typeof calculateLeaderboard === "function") calculateLeaderboard();
-    } catch (err) { console.error("Fetch error:", err); }
+        // Tell the page to start drawing the list/leaderboard
+        if (typeof renderLevels === 'function') {
+            renderLevels();
+        }
+
+    } catch (error) {
+        console.error("Error loading spreadsheet data:", error);
+    }
 }
-fetchAllData();
+
+// Helper to turn CSV text into a Javascript Array of Objects
+function parseCSV(csv) {
+    const lines = csv.split('\n');
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const result = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        
+        // This handles commas inside quotes if your descriptions have them
+        const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/^"|"$/g, '').trim());
+        const obj = {};
+        
+        headers.forEach((header, index) => {
+            obj[header] = values[index];
+        });
+        result.push(obj);
+    }
+    return result;
+}
+
+// Start the process
+fetchData();
