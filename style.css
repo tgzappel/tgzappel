@@ -5,11 +5,17 @@
     --text-muted: #86868b;
     --bg-page: #f5f5f7;
     --border: #e5e5e5;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-body { margin: 0; padding-top: 100px; background: var(--bg-page); font-family: -apple-system, sans-serif; }
+body { 
+    margin: 0; 
+    padding-top: 100px; 
+    background: var(--bg-page); 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+}
 
-/* Header */
+/* --- HEADER --- */
 nav {
     position: fixed; top: 0; left: 0; width: 100%; height: 80px;
     background: #fff; display: flex; justify-content: space-between;
@@ -17,40 +23,79 @@ nav {
 }
 .nav-logo { height: 55px; width: auto; image-rendering: -webkit-optimize-contrast; }
 .nav-links { display: flex; gap: 25px; }
-nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; }
+nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
 nav a.active { color: var(--accent); }
 
-/* Layout & Entries */
-#main-layout { display: grid; grid-template-columns: 1fr 300px; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 20px; }
-.level-entry { 
-    display: flex; align-items: center; background: #fff; padding: 15px; 
-    border-radius: 18px; border: 1px solid var(--border); cursor: pointer; margin-bottom: 12px; 
+/* --- SEARCH --- */
+.search-box { margin-bottom: 25px; width: 100%; }
+#searchBar {
+    width: 100%; padding: 14px 20px; font-size: 1rem;
+    border: 1px solid var(--border); border-radius: 12px;
+    background: #fff; transition: all 0.2s ease;
 }
-.level-thumb { width: 100px; height: 75px; object-fit: cover; border-radius: 12px; margin-right: 15px; }
-.level-rank { font-weight: 800; width: 50px; color: #ccc; font-size: 1.2rem; }
-.level-info { flex-grow: 1; }
-.level-name { font-weight: 700; font-size: 1.1rem; }
-.level-meta { font-size: 0.85rem; color: var(--text-muted); }
-.level-difficulty-slot { width: 50px; display: flex; justify-content: center; }
-.diff-icon-small { height: 35px; width: 35px; object-fit: contain; }
+#searchBar:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-light); }
 
-/* Sidebar */
+/* --- MAIN LIST ENTRIES --- */
+#main-layout { display: grid; grid-template-columns: 1fr 300px; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+.level-entry { 
+    display: flex; align-items: center; background: #fff; padding: 15px 20px; 
+    border-radius: 18px; border: 1px solid var(--border); cursor: pointer; 
+    margin-bottom: 12px; transition: transform 0.2s;
+}
+.level-entry:hover { transform: scale(1.01); box-shadow: var(--shadow); }
+
+.level-thumb { width: 100px; height: 75px; object-fit: cover; border-radius: 10px; margin-right: 15px; }
+
+/* THE FIX: Larger Rank Indexes */
+.level-rank { 
+    font-weight: 900; 
+    width: 65px; 
+    color: #cfd0d6; 
+    font-size: 1.6rem; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.level-info { flex-grow: 1; }
+.level-name { font-weight: 800; font-size: 1.2rem; line-height: 1.2; }
+.level-meta { font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; }
+
+/* THE FIX: Scaled-down Difficulty Icons */
+.level-difficulty-slot { 
+    width: 50px; 
+    height: 50px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    margin-left: 10px;
+}
+.diff-icon-small { 
+    height: 42px; 
+    width: 42px; 
+    object-fit: contain; 
+}
+
+/* --- SIDEBAR --- */
 #sidebar { background: #fff; padding: 20px; border-radius: 20px; border: 1px solid var(--border); height: fit-content; position: sticky; top: 100px; }
 .submit-btn { 
     display: block; text-align: center; background: var(--accent); color: #fff; 
     text-decoration: none; font-weight: 700; padding: 12px; border-radius: 50px; margin-bottom: 25px; 
+    transition: background 0.2s;
 }
+.submit-btn:hover { background: #0063cc; }
 .tag-btn { width: 100%; text-align: left; padding: 10px; margin-bottom: 5px; border-radius: 10px; border: none; background: #f5f5f7; cursor: pointer; font-weight: 600; }
 .tag-btn.active-tag { background: var(--accent); color: #fff; }
 
-/* Modals & Stats */
+/* --- MODAL --- */
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; overflow-y: auto; padding: 40px 10px; }
 .modal-content { background: #fff; max-width: 520px; margin: 0 auto; padding: 30px; border-radius: 25px; position: relative; }
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
 .stat-box { background: #f5f5f7; padding: 12px; border-radius: 12px; }
 .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
 .stat-value { font-weight: 800; font-size: 1.1rem; }
-.skill-tag { background: var(--accent-light); color: var(--accent); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; }
-.victor-pill { background: #f0f0f2; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; }
-.diff-icon-large { height: 50px; width: 50px; object-fit: contain; }
+.skill-tag { background: var(--accent-light); color: var(--accent); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; margin-right: 5px; margin-bottom: 5px; display: inline-block; }
+.victor-pill { background: #f0f0f2; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; display: inline-block; margin: 0 5px 5px 0; }
+.diff-icon-large { height: 60px; width: 60px; object-fit: contain; }
 .close-btn { position: absolute; right: 20px; top: 15px; cursor: pointer; font-size: 24px; color: #ccc; }
