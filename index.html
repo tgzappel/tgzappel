@@ -96,26 +96,62 @@
         }
 
         function showLevelDetails(id) {
-            const lvl = DATA.levels.find(l => l.id === id);
-            const victors = DATA.players.filter(p => p.completions.includes(id));
-            document.getElementById('modal-body').innerHTML = `
-                <div style="width:100%; aspect-ratio:4/3; overflow:hidden; border-radius:15px; margin-bottom:15px;">
-                    <img src="${lvl.img}" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <h2 style="margin:0;">${lvl.name}</h2>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:20px 0;">
-                    <div style="background:#f5f5f7; padding:12px; border-radius:12px;">Enjoyment: <b style="color:${getStatColor(lvl.enjoyment)}">${lvl.enjoyment}</b></div>
-                    <div style="background:#f5f5f7; padding:12px; border-radius:12px;">Quality: <b style="color:${getStatColor(lvl.quality)}">${lvl.quality}</b></div>
-                    <div style="background:#f5f5f7; padding:12px; border-radius:12px;">Skill/Effort: <b style="color:#000">${lvl.ratio}</b></div>
-                    <div style="background:#f5f5f7; padding:12px; border-radius:12px;">Verifier: <b>${lvl.verifier}</b></div>
-                </div>
-                <p><b>Skills:</b> ${lvl.skills}</p>
-                <p>${lvl.desc || ""}</p>
-                <hr><p><b>Victors:</b> ${victors.map(v => v.name).join(', ') || "None"}</p>
-            `;
-            document.getElementById('infoModal').style.display = "block";
-            document.body.style.overflow = "hidden";
-        }
+    const lvl = DATA.levels.find(l => l.id === id);
+    const victors = DATA.players.filter(p => p.completions.includes(id));
+
+    // Fallback helper to return N/A if data is missing or empty
+    const checkValue = (val) => (val && String(val).trim() !== "") ? val : "N/A";
+
+    document.getElementById('modal-body').innerHTML = `
+        <div style="width:100%; aspect-ratio:4/3; overflow:hidden; border-radius:15px; margin-bottom:20px; border:1px solid var(--border);">
+            <img src="${lvl.img}" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+
+        <h2 style="margin:0;">${lvl.name}</h2>
+        <p style="color:var(--text-muted); margin-bottom:20px;">By <strong>${lvl.author}</strong></p>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+            <div class="stat-box">
+                <div class="stat-label">Enjoyment</div>
+                <div class="stat-value" style="color:${getStatColor(lvl.enjoyment)};">${checkValue(lvl.enjoyment)}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Quality</div>
+                <div class="stat-value" style="color:${getStatColor(lvl.quality)};">${checkValue(lvl.quality)}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Skill/Effort</div>
+                <div class="stat-value" style="color:#000;">${checkValue(lvl.ratio)}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Verifier</div>
+                <div class="stat-value">${checkValue(lvl.verifier)}</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <h3 class="modal-sub-header">Skills Required</h3>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                ${lvl.skills ? lvl.skills.split(',').map(s => `
+                    <span class="skill-tag">${s.trim()}</span>
+                `).join('') : '<span style="color:#ccc;">N/A</span>'}
+            </div>
+        </div>
+
+        <p style="line-height:1.6; color:#444;">${lvl.desc || "No description provided."}</p>
+        
+        <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+        
+        <h3 class="modal-sub-header">Victors (${victors.length})</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            ${victors.length > 0 
+                ? victors.map(v => `<span class="victor-pill">${v.name}</span>`).join('') 
+                : '<span style="color:#ccc; font-style:italic;">No victors yet.</span>'}
+        </div>
+    `;
+    document.getElementById('infoModal').style.display = "block";
+    document.body.style.overflow = "hidden"; 
+}
         function closeModal() { document.getElementById('infoModal').style.display = "none"; document.body.style.overflow = "auto"; }
     </script>
 </body>
