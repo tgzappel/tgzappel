@@ -32,14 +32,21 @@ body {
    ========================================
 */
 
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
 nav {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: 80px;
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px); /* Modern frosted glass effect */
+    backdrop-filter: blur(10px);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -48,19 +55,23 @@ nav {
     border-bottom: 1px solid var(--border);
 }
 
-.logo-link {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-}
-
 .nav-logo {
-    height: 32px; /* Scales your 8000x3125 image perfectly */
-    width: auto;
+    height: 55px; /* Increased from 32px to make it larger */
+    width: auto; 
     display: block;
-    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -webkit-optimize-contrast; 
 }
 
+
+body {
+    margin: 0;
+    padding-top: 100px; /* hi */
+    background-color: var(--bg-page);
+}
+
+#sidebar {
+    top: 100px; 
+}
 .nav-links {
     display: flex;
     gap: 30px;
