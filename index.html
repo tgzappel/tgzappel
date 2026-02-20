@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The List | Levels</title>
+    <title>The Grandmaster Zone</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,32 +27,12 @@
 
         <aside id="sidebar">
             <a href="YOUR_FORM_LINK" target="_blank" class="submit-btn">Submit Record</a>
-            <h3 class="sidebar-header">FILTER SKILLS</h3>
+            <h3 style="font-size:0.75rem; color:var(--text-muted); margin-bottom:15px;">FILTER SKILLS</h3>
             <div id="tag-filters">
                 <button class="tag-btn" onclick="toggleTag('Blues')">Blues</button>
-                <button class="tag-btn" onclick="toggleTag('Chokepoint')">Chokepoint</button>
-                <button class="tag-btn" onclick="toggleTag('Crouch Spam')">Crouch Spam</button>
-                <button class="tag-btn" onclick="toggleTag('Crumble')">Crumble</button>
-                <button class="tag-btn" onclick="toggleTag('Crusher')">Crusher</button>
-                <button class="tag-btn" onclick="toggleTag('Endurance')">Endurance</button>
-                <button class="tag-btn" onclick="toggleTag('Gerald Gameplay')">Gerald Gameplay</button>
-                <button class="tag-btn" onclick="toggleTag('Kaizo')">Kaizo</button>
-                <button class="tag-btn" onclick="toggleTag('Keydoor')">Keydoor</button>
-                <button class="tag-btn" onclick="toggleTag('Litejumps')">Litejumps</button>
-                <button class="tag-btn" onclick="toggleTag('Memory')">Memory</button>
-                <button class="tag-btn" onclick="toggleTag('Mob')">Mob</button>
-                <button class="tag-btn" onclick="toggleTag('Momentum Control')">Momentum Control</button>
-                <button class="tag-btn" onclick="toggleTag('Needle Gameplay')">Needle Gameplay</button>
                 <button class="tag-btn" onclick="toggleTag('Precision')">Precision</button>
-                <button class="tag-btn" onclick="toggleTag('Routing')">Routing</button>
-                <button class="tag-btn" onclick="toggleTag('Sidejumps')">Sidejumps</button>
-                <button class="tag-btn" onclick="toggleTag('Speedrun')">Speedrun</button>
-                <button class="tag-btn" onclick="toggleTag('Spikedges')">Spikedges</button>
-                <button class="tag-btn" onclick="toggleTag('Strategy')">Strategy</button>
                 <button class="tag-btn" onclick="toggleTag('Technical')">Technical</button>
-                <button class="tag-btn" onclick="toggleTag('Trampoline')">Trampoline</button>
-                <button class="tag-btn" onclick="toggleTag('Walljumps')">Walljumps</button>
-            </div>
+                </div>
         </aside>
     </div>
 
@@ -67,6 +46,7 @@
     <script src="data.js"></script>
     <script>
         let activeTags = [];
+
         function renderLevels() { filterLevels(); }
 
         function toggleTag(tag) {
@@ -78,10 +58,8 @@
         function getStatColor(val) {
             const num = parseFloat(String(val).split('/')[0]);
             if (isNaN(num)) return "#86868b";
-            if (num <= 25) return "#800000"; 
             if (num <= 45) return "#cc0000"; 
-            if (num <= 65) return "#e6ac00"; 
-            if (num <= 85) return "#2eb82e"; 
+            if (num <= 75) return "#e6ac00"; 
             return "#00cc44";
         }
 
@@ -96,21 +74,25 @@
             });
 
             document.getElementById('list-view').innerHTML = filtered.map((lvl, i) => {
-                let rank = `#${i + 1}`;
-                if (i === 0) rank = "🥇"; if (i === 1) rank = "🥈"; if (i === 2) rank = "🥉";
-                
+                let rankText = `#${i + 1}`;
+                if (i === 0) rankText = "🥇"; 
+                if (i === 1) rankText = "🥈"; 
+                if (i === 2) rankText = "🥉";
+
                 const diffIcon = lvl.difficulty ? `<img src="assets/${lvl.difficulty.trim()}.png" class="diff-icon-small">` : '';
 
                 return `
                 <div class="level-entry" onclick="showLevelDetails('${lvl.id}')">
                     <img class="level-thumb" src="${lvl.img}">
-                    <div class="level-rank">${rank}</div>
+                    <div class="level-rank">${rankText}</div>
                     <div class="level-info">
                         <div class="level-name">${lvl.name}</div>
                         <div class="level-meta">by ${lvl.author}</div>
                         <div class="level-meta" style="color:var(--accent); font-weight:700;">${lvl.points}pts</div>
                     </div>
-                    <div class="level-difficulty-slot">${diffIcon}</div>
+                    <div class="level-difficulty-slot">
+                        ${diffIcon}
+                    </div>
                 </div>`;
             }).join('');
         }
@@ -121,10 +103,10 @@
             const check = (val) => (val && String(val).trim() !== "") ? val : "N/A";
 
             document.getElementById('modal-body').innerHTML = `
-                <div class="modal-image-container">
-                    <img src="${lvl.img}" class="modal-image">
+                <div style="width:100%; aspect-ratio:4/3; overflow:hidden; border-radius:15px; margin-bottom:20px; border:1px solid var(--border);">
+                    <img src="${lvl.img}" style="width:100%; height:100%; object-fit:cover;">
                 </div>
-                <div class="modal-header-flex">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
                         <h2 style="margin:0;">${lvl.name}</h2>
                         <p style="color:var(--text-muted); margin-bottom:20px;">By <strong>${lvl.author}</strong></p>
@@ -138,13 +120,13 @@
                     <div class="stat-box"><div class="stat-label">Verifier</div><div class="stat-value">${check(lvl.verifier)}</div></div>
                 </div>
                 <h3 class="modal-sub-header">Skills Required</h3>
-                <div class="skill-container">
+                <div>
                     ${lvl.skills ? lvl.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : '<span style="color:#ccc;">N/A</span>'}
                 </div>
-                <p class="modal-desc">${lvl.desc || "No description provided."}</p>
-                <hr class="modal-hr">
+                <p style="line-height:1.6; color:#444; margin-top:15px;">${lvl.desc || "No description provided."}</p>
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
                 <h3 class="modal-sub-header">Victors (${victors.length})</h3>
-                <div class="victor-container">
+                <div>
                     ${victors.length > 0 ? victors.map(v => `<span class="victor-pill">${v.name}</span>`).join('') : '<span style="color:#ccc; font-style:italic;">No victors yet.</span>'}
                 </div>`;
             document.getElementById('infoModal').style.display = "block";
