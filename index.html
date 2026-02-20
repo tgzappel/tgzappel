@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The Grandmaster Zone</title>
+    <title>The List | Levels</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,9 +19,6 @@
 
     <div id="main-layout">
         <main>
-            <div class="search-box">
-                <input type="text" id="searchBar" placeholder="Search levels or creators..." onkeyup="filterLevels()">
-            </div>
             <div id="list-view"></div>
         </main>
 
@@ -32,6 +29,9 @@
                 <button class="tag-btn" onclick="toggleTag('Blues')">Blues</button>
                 <button class="tag-btn" onclick="toggleTag('Precision')">Precision</button>
                 <button class="tag-btn" onclick="toggleTag('Technical')">Technical</button>
+                <button class="tag-btn" onclick="toggleTag('Kaizo')">Kaizo</button>
+                <button class="tag-btn" onclick="toggleTag('Memory')">Memory</button>
+                <button class="tag-btn" onclick="toggleTag('Speedrun')">Speedrun</button>
                 </div>
         </aside>
     </div>
@@ -64,13 +64,11 @@
         }
 
         function filterLevels() {
-            const search = document.getElementById('searchBar').value.toLowerCase();
             if (!window.DATA.levels) return;
 
+            // Filtering now only checks active tags from the sidebar
             const filtered = DATA.levels.filter(lvl => {
-                const match = lvl.name.toLowerCase().includes(search) || lvl.author.toLowerCase().includes(search);
-                const tags = activeTags.length === 0 || activeTags.every(t => lvl.skills.includes(t));
-                return match && tags;
+                return activeTags.length === 0 || activeTags.every(t => lvl.skills.includes(t));
             });
 
             document.getElementById('list-view').innerHTML = filtered.map((lvl, i) => {
