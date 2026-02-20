@@ -26,17 +26,11 @@ nav {
 nav a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
 nav a.active { color: var(--accent); }
 
-/* --- SEARCH --- */
-.search-box { margin-bottom: 25px; width: 100%; }
-#searchBar {
-    width: 100%; padding: 14px 20px; font-size: 1rem;
-    border: 1px solid var(--border); border-radius: 12px;
-    background: #fff; transition: all 0.2s ease;
-}
-#searchBar:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-light); }
-
 /* --- MAIN LIST ENTRIES --- */
 #main-layout { display: grid; grid-template-columns: 1fr 300px; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* Added top margin to the list since search bar is gone */
+#list-view { margin-top: 10px; }
 
 .level-entry { 
     display: flex; align-items: center; background: #fff; padding: 15px 20px; 
@@ -47,7 +41,6 @@ nav a.active { color: var(--accent); }
 
 .level-thumb { width: 100px; height: 75px; object-fit: cover; border-radius: 10px; margin-right: 15px; }
 
-/* THE FIX: Larger Rank Indexes */
 .level-rank { 
     font-weight: 900; 
     width: 65px; 
@@ -62,7 +55,6 @@ nav a.active { color: var(--accent); }
 .level-name { font-weight: 800; font-size: 1.2rem; line-height: 1.2; }
 .level-meta { font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; }
 
-/* THE FIX: Scaled-down Difficulty Icons */
 .level-difficulty-slot { 
     width: 50px; 
     height: 50px; 
