@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,10 +15,7 @@
     </nav>
 
     <div id="container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
-        <h1 style="text-align:center;">Top Players</h1>
-        <div class="search-box">
-            <input type="text" id="pSearch" placeholder="Search player..." onkeyup="renderLevels()">
-        </div>
+        <h1 style="text-align:center; font-weight: 800; margin-bottom: 30px;">Leaderboard</h1>
         <div id="leaderboard-list"></div>
     </div>
 
@@ -31,7 +30,6 @@
     <script>
         function renderLevels() {
             if (!window.DATA.players) return;
-            const search = document.getElementById('pSearch').value.toLowerCase();
             const list = DATA.players.map(p => {
                 let pts = 0;
                 p.completions.forEach(id => {
@@ -39,7 +37,7 @@
                     if (l) pts += parseFloat(l.points) || 0;
                 });
                 return { name: p.name, pts: pts, count: p.completions.length };
-            }).filter(p => p.name.toLowerCase().includes(search)).sort((a,b) => b.pts - a.pts);
+            }).sort((a,b) => b.pts - a.pts);
 
             document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => {
                 let rank = `#${i + 1}`;
@@ -62,8 +60,9 @@
 
             document.getElementById('player-modal-body').innerHTML = `
                 <h2>${player.name}</h2>
-                <div style="max-height: 400px; overflow-y: auto;">
-                    ${comps.map(c => `<div style="padding:10px; border-bottom:1px solid #eee;"><b>#${c.rank}</b> — ${c.name}</div>`).join('')}
+                <p style="color:var(--text-muted); margin-bottom: 15px;">Total Completions: ${comps.length}</p>
+                <div style="max-height: 400px; overflow-y: auto; border-top: 1px solid #eee;">
+                    ${comps.map(c => `<div style="padding:12px; border-bottom:1px solid #f9f9f9;"><b>#${c.rank}</b> — ${c.name}</div>`).join('')}
                 </div>`;
             document.getElementById('playerModal').style.display = "block";
             document.body.style.overflow = "hidden";
