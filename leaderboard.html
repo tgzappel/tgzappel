@@ -46,7 +46,7 @@
                 return `
                 <div class="level-entry" onclick="showPlayerDetails('${p.name.replace(/'/g, "\\'")}')">
                     <div class="level-rank">${rank}</div>
-                    <div class="level-info"><b>${p.name}</b><br><small>${p.count} completions</small></div>
+                    <div class="level-info"><b>${p.name}</b><br><small>${p.count - 1} completions</small></div>
                     <div class="level-points">${p.pts.toLocaleString()} pts</div>
                 </div>`;
             }).join('');
