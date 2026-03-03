@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Leaderboard | The Grandmaster Zone</title>
+    <title>Leaderboard</title>
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -13,12 +13,7 @@
         .rank-red    { background-color: #ffebee !important; border-color: #ffcdd2 !important; }
         .rank-gray   { background-color: #fafafa !important; border-color: #eeeeee !important; }
 
-        /* Dark rank number for contrast */
-        .level-rank {
-            color: #333 !important;
-            font-weight: 800;
-        }
-
+        .level-rank { color: #333 !important; font-weight: 800; }
         .flag-container { width: 24px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 10px; border-radius: 2px; overflow: hidden; object-fit: cover; }
         .no-flag { border: 1px dashed #ccc; background-color: #fff; box-sizing: border-box; }
         .player-name-wrapper { display: flex; align-items: center; }
@@ -60,13 +55,24 @@
             if (!window.DATA || !window.DATA.players) return;
             document.getElementById('loading-msg').style.display = 'none';
 
+            // Clean data and calculate points
             const list = DATA.players.map(p => {
                 let pts = 0;
-                p.completions.forEach(id => {
+                // Clean completions array to remove empty strings/nulls
+                const validComps = p.completions.filter(id => id && String(id).trim() !== "");
+                
+                validComps.forEach(id => {
                     const l = DATA.levels.find(lvl => String(lvl.id).trim() === String(id).trim());
                     if (l) pts += parseFloat(l.points) || 0;
                 });
-                return { name: p.name, pts: pts, count: p.completions.length, country: p.country };
+                
+                return { 
+                    name: p.name, 
+                    pts: pts, 
+                    count: validComps.length, // Correct count calculated here
+                    country: p.country,
+                    completions: validComps 
+                };
             }).sort((a, b) => b.pts - a.pts);
 
             document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => {
@@ -88,6 +94,9 @@
                     <div class="level-points">${p.pts.toLocaleString()} pts</div>
                 </div>`;
             }).join('');
+
+            // Store the calculated list back to window for the modal to use the same counts
+            window.CALCULATED_PLAYERS = list;
         }
 
         async function fetchData() {
@@ -102,8 +111,9 @@
         }
 
         function showPlayerDetails(playerName) {
-            const player = DATA.players.find(p => p.name === playerName);
+            const player = window.CALCULATED_PLAYERS.find(p => p.name === playerName);
             if (!player) return;
+
             const comps = player.completions.map(id => {
                 const idx = DATA.levels.findIndex(l => String(l.id).trim() === String(id).trim());
                 return idx !== -1 ? { rank: idx + 1, name: DATA.levels[idx].name } : null;
@@ -113,7 +123,8 @@
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     ${getFlagElement(player.country)} <h2 style="margin: 0;">${player.name}</h2>
                 </div>
-                <div style="max-height: 400px; overflow-y: auto;">
+                <p style="margin-bottom: 10px;">Total Completions: <b>${player.count}</b></p>
+                <div style="max-height: 400px; overflow-y: auto; border-top: 1px solid #eee;">
                     ${comps.map(c => `<div style="padding:15px; border-bottom:1px solid #eee;"><b>#${c.rank}</b> — ${c.name}</div>`).join('')}
                 </div>`;
             document.getElementById('playerModal').style.display = "block";
