@@ -6,23 +6,31 @@
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Compact Tag Styling */
+        /* Sidebar Tag Styling */
         #tag-filters {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px; /* Small gap between buttons */
-            margin-top: 10px;
+            gap: 12px; /* Increased spacing back to original feel */
+            margin-top: 15px;
         }
 
         .tag-btn {
-            padding: 4px 10px; /* Thinner padding */
-            font-size: 0.7rem; /* Smaller text */
-            border-radius: 4px;
+            padding: 6px 14px; 
+            font-size: 0.75rem;
+            border-radius: 6px;
             background: #f1f1f1;
             border: 1px solid #ddd;
             cursor: pointer;
             transition: all 0.2s;
-            white-space: nowrap; /* Prevents text from wrapping inside button */
+            
+            /* Prevents stretching to full width */
+            width: auto; 
+            flex-grow: 0; 
+            white-space: nowrap; 
+        }
+
+        .tag-btn:hover {
+            background: #e8e8e8;
         }
 
         .tag-btn.active-tag {
@@ -31,12 +39,13 @@
             border-color: var(--accent, #6200ee);
         }
 
-        /* Sidebar adjustment */
         #sidebar h3 {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: #888;
+            font-weight: 800;
+            text-transform: uppercase;
         }
 
         #loading-overlay {
@@ -61,13 +70,14 @@
 
     <div id="main-layout">
         <main>
-            <div id="loading-overlay">Loading levels from the zone...</div>
+            <div id="loading-overlay">Fetching levels from the zone...</div>
             <div id="list-view"></div>
         </main>
 
         <aside id="sidebar">
-            <a href="YOUR_FORM_LINK" target="_blank" class="submit-btn">Submit Record</a>
-            <h3>FILTER SKILLS</h3>
+            <a href="YOUR_FORM_LINK" target="_blank" class="submit-btn" style="margin-bottom: 25px;">Submit Record</a>
+            
+            <h3>Filter Skills</h3>
             <div id="tag-filters">
                 <button class="tag-btn" onclick="toggleTag('Blues')">Blues</button>
                 <button class="tag-btn" onclick="toggleTag('Chokepoint')">Choke</button>
@@ -104,8 +114,8 @@
     </div>
 
     <script>
-        // --- CONFIG ---
-        const SHEET_WEB_APP_URL = "YOUR_WEB_APP_URL_HERE"; 
+        // --- LIVE DATA CONFIG ---
+        const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw2J9pN6HUDkgrrRRgS6OiN_ejs7VJmWOgBGl8j7ZbBuVhUXtj8Y5J15YnAjRkGkzg/exec"; 
 
         let activeTags = [];
 
@@ -117,13 +127,28 @@
                 document.getElementById('loading-overlay').style.display = 'none';
                 filterLevels();
             } catch (e) {
-                document.getElementById('loading-overlay').innerHTML = "Error loading data.";
+                console.error(e);
+                document.getElementById('loading-overlay').innerHTML = "<span style='color:red;'>Failed to load. Check console.</span>";
             }
         }
 
         function toggleTag(tag) {
+            // Find which button was clicked
+            const btns = document.querySelectorAll('.tag-btn');
+            btns.forEach(b => {
+                if(b.innerText === tag || (tag === 'Choke' && b.innerText === 'Choke')) {
+                   // This handles the display logic for tags
+                }
+            });
+
+            // Target the button specifically
             event.currentTarget.classList.toggle('active-tag');
-            activeTags.includes(tag) ? activeTags = activeTags.filter(t => t !== tag) : activeTags.push(tag);
+            
+            if (activeTags.includes(tag)) {
+                activeTags = activeTags.filter(t => t !== tag);
+            } else {
+                activeTags.push(tag);
+            }
             filterLevels();
         }
 
@@ -192,8 +217,10 @@
                     <div class="stat-box"><div class="stat-label">Verifier</div><div class="stat-value">${check(lvl.verifier)}</div></div>
                 </div>
                 <h3 style="font-size:0.9rem; margin-top:20px;">Skills</h3>
-                <div>${lvl.skills ? lvl.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : 'N/A'}</div>
-                <p style="font-size:0.9rem; color:#444; line-height:1.5;">${lvl.desc || ""}</p>
+                <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                    ${lvl.skills ? lvl.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : 'N/A'}
+                </div>
+                <p style="font-size:0.9rem; color:#444; line-height:1.5; margin-top:15px;">${lvl.desc || ""}</p>
                 <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
                 <h3 style="font-size:0.9rem;">Victors (${victors.length})</h3>
                 <div style="display:flex; flex-wrap:wrap; gap:5px;">${victors.map(v => `<span class="victor-pill">${v.name}</span>`).join('')}</div>`;
@@ -202,7 +229,10 @@
             document.body.style.overflow = "hidden";
         }
 
-        function closeModal() { document.getElementById('infoModal').style.display = "none"; document.body.style.overflow = "auto"; }
+        function closeModal() { 
+            document.getElementById('infoModal').style.display = "none"; 
+            document.body.style.overflow = "auto"; 
+        }
         
         window.onload = fetchData;
     </script>
