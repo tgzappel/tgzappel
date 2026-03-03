@@ -5,6 +5,45 @@
     <title>Leaderboard</title>
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Pastel Rank Colors */
+        .rank-purple { background-color: #f3e5f5 !important; border-color: #e1bee7 !important; } /* Top 3 */
+        .rank-blue   { background-color: #e3f2fd !important; border-color: #bbdefb !important; } /* 4-10 */
+        .rank-green  { background-color: #e8f5e9 !important; border-color: #c8e6c9 !important; } /* 11-25 */
+        .rank-yellow { background-color: #fffde7 !important; border-color: #fff9c4 !important; } /* 26-50 */
+        .rank-red    { background-color: #ffebee !important; border-color: #ffcdd2 !important; } /* 51-100 */
+        .rank-gray   { background-color: #fafafa !important; border-color: #eeeeee !important; } /* 100+ */
+
+        /* Flag Styling */
+        .flag-container {
+            width: 24px;
+            height: 16px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+            border-radius: 2px;
+            overflow: hidden;
+            object-fit: cover;
+        }
+
+        .no-flag {
+            border: 1px dashed #ccc;
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+
+        .player-name-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Prevent points from being hidden by background colors */
+        .level-points {
+            font-weight: 800;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body>
     <nav>
@@ -31,10 +70,18 @@
 
     <script src="data.js"></script>
     <script>
+        function getFlagElement(countryCode) {
+            if (!countryCode || countryCode.trim() === "" || countryCode.toLowerCase() === "n/a") {
+                return `<div class="flag-container no-flag"></div>`;
+            }
+            const code = countryCode.toLowerCase().trim();
+            // Using FlagCDN for high-quality flag icons
+            return `<img class="flag-container" src="https://flagcdn.com/w40/${code}.png" onerror="this.outerHTML='<div class=\'flag-container no-flag\'></div>'">`;
+        }
+
         function renderLevels() {
             if (!window.DATA || !window.DATA.players) return;
 
-            // Process data and calculate total points
             const list = DATA.players.map(p => {
                 let pts = 0;
                 p.completions.forEach(id => {
@@ -44,28 +91,39 @@
                 return { 
                     name: p.name, 
                     pts: pts, 
-                    count: p.completions.length 
+                    count: p.completions.length,
+                    country: p.country 
                 };
             }).sort((a, b) => b.pts - a.pts);
 
-            // Generate the list HTML
             document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => {
-                let rank = `#${i + 1}`;
-                if (i === 0) rank = "🥇"; 
-                if (i === 1) rank = "🥈"; 
-                if (i === 2) rank = "🥉";
-                
-                // Special logic: Everyone has -1 completion except wyatpenguin
-                const displayedCount = (p.name === "wyatpenguin") ? p.count : (p.count - 1);
+                const rankNum = i + 1;
+                let rankLabel = `#${rankNum}`;
+                let colorClass = "rank-gray";
+
+                // Rank Color Logic
+                if (rankNum <= 3) {
+                    colorClass = "rank-purple";
+                    if (rankNum === 1) rankLabel = "🥇";
+                    if (rankNum === 2) rankLabel = "🥈";
+                    if (rankNum === 3) rankLabel = "🥉";
+                } 
+                else if (rankNum <= 10) colorClass = "rank-blue";
+                else if (rankNum <= 25) colorClass = "rank-green";
+                else if (rankNum <= 50) colorClass = "rank-yellow";
+                else if (rankNum <= 100) colorClass = "rank-red";
 
                 return `
-                <div class="level-entry" onclick="showPlayerDetails('${p.name.replace(/'/g, "\\'")}')">
-                    <div class="level-rank">${rank}</div>
+                <div class="level-entry ${colorClass}" onclick="showPlayerDetails('${p.name.replace(/'/g, "\\'")}')">
+                    <div class="level-rank">${rankLabel}</div>
                     <div class="level-info">
-                        <b>${p.name}</b><br>
-                        <small>${displayedCount} completions</small>
+                        <div class="player-name-wrapper">
+                            ${getFlagElement(p.country)}
+                            <b>${p.name}</b>
+                        </div>
+                        <small>${p.count} completions</small>
                     </div>
-                    <div class="level-points" style="font-weight: 800; color: var(--accent);">
+                    <div class="level-points">
                         ${p.pts.toLocaleString()} pts
                     </div>
                 </div>`;
@@ -81,13 +139,13 @@
                 return idx !== -1 ? { rank: idx + 1, name: DATA.levels[idx].name } : null;
             }).filter(x => x).sort((a, b) => a.rank - b.rank);
 
-            // Keep modal count consistent with the list count logic
-            const modalCount = (player.name === "wyatpenguin") ? comps.length : (comps.length - 1);
-
             document.getElementById('player-modal-body').innerHTML = `
-                <h2 style="margin-top: 0;">${player.name}</h2>
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 5px;">
+                    ${getFlagElement(player.country)}
+                    <h2 style="margin: 0;">${player.name}</h2>
+                </div>
                 <p style="color:var(--text-muted); margin-bottom: 20px; font-weight: 600;">
-                    Total Completions: ${modalCount}
+                    Total Completions: ${comps.length}
                 </p>
                 <div style="max-height: 400px; overflow-y: auto; border-top: 1px solid var(--border); border-radius: 10px;">
                     ${comps.map(c => `
@@ -106,7 +164,6 @@
             document.body.style.overflow = "auto"; 
         }
 
-        // Initialize the page
         window.onload = renderLevels;
     </script>
 </body>
