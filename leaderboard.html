@@ -2,61 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Leaderboard</title>
+    <title>Leaderboard | The Grandmaster Zone</title>
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Pastel Rank Colors */
-        .rank-purple { background-color: #f3e5f5 !important; border-color: #e1bee7 !important; } /* Top 3 */
-        .rank-blue   { background-color: #e3f2fd !important; border-color: #bbdefb !important; } /* 4-10 */
-        .rank-green  { background-color: #e8f5e9 !important; border-color: #c8e6c9 !important; } /* 11-25 */
-        .rank-yellow { background-color: #fffde7 !important; border-color: #fff9c4 !important; } /* 26-50 */
-        .rank-red    { background-color: #ffebee !important; border-color: #ffcdd2 !important; } /* 51-100 */
-        .rank-gray   { background-color: #fafafa !important; border-color: #eeeeee !important; } /* 100+ */
+        .rank-purple { background-color: #f3e5f5 !important; border-color: #e1bee7 !important; }
+        .rank-blue   { background-color: #e3f2fd !important; border-color: #bbdefb !important; }
+        .rank-green  { background-color: #e8f5e9 !important; border-color: #c8e6c9 !important; }
+        .rank-yellow { background-color: #fffde7 !important; border-color: #fff9c4 !important; }
+        .rank-red    { background-color: #ffebee !important; border-color: #ffcdd2 !important; }
+        .rank-gray   { background-color: #fafafa !important; border-color: #eeeeee !important; }
 
-        /* Flag Styling */
-        .flag-container {
-            width: 24px;
-            height: 16px;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 10px;
-            border-radius: 2px;
-            overflow: hidden;
-            object-fit: cover;
-        }
-
-        .no-flag {
-            border: 1px dashed #ccc;
-            background-color: #fff;
-            box-sizing: border-box;
-        }
-
-        .player-name-wrapper {
-            display: flex;
-            align-items: center;
-        }
-
-        .level-points {
+        /* Dark rank number for contrast */
+        .level-rank {
+            color: #333 !important;
             font-weight: 800;
-            color: var(--text-main);
-            white-space: nowrap;
         }
 
-        /* Loading Indicator Style */
-        #loading-msg {
-            text-align: center;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-top: 50px;
-        }
+        .flag-container { width: 24px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 10px; border-radius: 2px; overflow: hidden; object-fit: cover; }
+        .no-flag { border: 1px dashed #ccc; background-color: #fff; box-sizing: border-box; }
+        .player-name-wrapper { display: flex; align-items: center; }
+        #loading-msg { text-align: center; font-weight: 600; color: #666; margin-top: 50px; }
     </style>
 </head>
 <body>
     <nav>
-        <a href="index.html" class="logo-link">
-            <img src="assets/Newlogo.png" class="nav-logo">
-        </a>
+        <a href="index.html" class="logo-link"><img src="assets/Newlogo.png" class="nav-logo"></a>
         <div class="nav-links">
             <a href="index.html">Levels</a>
             <a href="leaderboard.html" class="active">Leaderboard</a>
@@ -65,7 +36,7 @@
 
     <div id="container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
         <h1 style="text-align:center; font-weight: 800; margin-bottom: 30px;">Leaderboard</h1>
-        <div id="loading-msg">Fetching live records from the zone...</div>
+        <div id="loading-msg">Fetching live records...</div>
         <div id="leaderboard-list"></div>
     </div>
 
@@ -80,16 +51,13 @@
         const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw2J9pN6HUDkgrrRRgS6OiN_ejs7VJmWOgBGl8j7ZbBuVhUXtj8Y5J15YnAjRkGkzg/exec"; 
 
         function getFlagElement(countryCode) {
-            if (!countryCode || countryCode.trim() === "" || countryCode.toLowerCase() === "n/a") {
-                return `<div class="flag-container no-flag"></div>`;
-            }
+            if (!countryCode || countryCode.trim() === "" || countryCode.toLowerCase() === "n/a") return `<div class="flag-container no-flag"></div>`;
             const code = countryCode.toLowerCase().trim();
             return `<img class="flag-container" src="https://flagcdn.com/w40/${code}.png" onerror="this.outerHTML='<div class=\'flag-container no-flag\'></div>'">`;
         }
 
         function renderLevels() {
             if (!window.DATA || !window.DATA.players) return;
-            
             document.getElementById('loading-msg').style.display = 'none';
 
             const list = DATA.players.map(p => {
@@ -98,25 +66,13 @@
                     const l = DATA.levels.find(lvl => String(lvl.id).trim() === String(id).trim());
                     if (l) pts += parseFloat(l.points) || 0;
                 });
-                return { 
-                    name: p.name, 
-                    pts: pts, 
-                    count: p.completions.length,
-                    country: p.country 
-                };
+                return { name: p.name, pts: pts, count: p.completions.length, country: p.country };
             }).sort((a, b) => b.pts - a.pts);
 
             document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => {
                 const rankNum = i + 1;
-                let rankLabel = `#${rankNum}`;
                 let colorClass = "rank-gray";
-
-                if (rankNum <= 3) {
-                    colorClass = "rank-purple";
-                    if (rankNum === 1) rankLabel = "🥇";
-                    if (rankNum === 2) rankLabel = "🥈";
-                    if (rankNum === 3) rankLabel = "🥉";
-                } 
+                if (rankNum <= 3) colorClass = "rank-purple";
                 else if (rankNum <= 10) colorClass = "rank-blue";
                 else if (rankNum <= 25) colorClass = "rank-green";
                 else if (rankNum <= 50) colorClass = "rank-yellow";
@@ -124,56 +80,16 @@
 
                 return `
                 <div class="level-entry ${colorClass}" onclick="showPlayerDetails('${p.name.replace(/'/g, "\\'")}')">
-                    <div class="level-rank">${rankLabel}</div>
+                    <div class="level-rank">#${rankNum}</div>
                     <div class="level-info">
-                        <div class="player-name-wrapper">
-                            ${getFlagElement(p.country)}
-                            <b>${p.name}</b>
-                        </div>
+                        <div class="player-name-wrapper">${getFlagElement(p.country)} <b>${p.name}</b></div>
                         <small>${p.count} completions</small>
                     </div>
-                    <div class="level-points">
-                        ${p.pts.toLocaleString()} pts
-                    </div>
+                    <div class="level-points">${p.pts.toLocaleString()} pts</div>
                 </div>`;
             }).join('');
         }
 
-        function showPlayerDetails(playerName) {
-            const player = DATA.players.find(p => p.name === playerName);
-            if (!player) return;
-
-            const comps = player.completions.map(id => {
-                const idx = DATA.levels.findIndex(l => String(l.id).trim() === String(id).trim());
-                return idx !== -1 ? { rank: idx + 1, name: DATA.levels[idx].name } : null;
-            }).filter(x => x).sort((a, b) => a.rank - b.rank);
-
-            document.getElementById('player-modal-body').innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 5px;">
-                    ${getFlagElement(player.country)}
-                    <h2 style="margin: 0;">${player.name}</h2>
-                </div>
-                <p style="color:var(--text-muted); margin-bottom: 20px; font-weight: 600;">
-                    Total Completions: ${comps.length}
-                </p>
-                <div style="max-height: 400px; overflow-y: auto; border-top: 1px solid var(--border); border-radius: 10px;">
-                    ${comps.map(c => `
-                        <div style="padding:15px; border-bottom:1px solid #f5f5f7; display: flex; justify-content: space-between;">
-                            <span><b>#${c.rank}</b> — ${c.name}</span>
-                        </div>
-                    `).join('')}
-                </div>`;
-                
-            document.getElementById('playerModal').style.display = "block";
-            document.body.style.overflow = "hidden";
-        }
-
-        function closePlayerModal() { 
-            document.getElementById('playerModal').style.display = "none"; 
-            document.body.style.overflow = "auto"; 
-        }
-
-        // --- FETCH LOGIC ---
         async function fetchData() {
             try {
                 const response = await fetch(SHEET_WEB_APP_URL);
@@ -181,12 +97,30 @@
                 window.DATA = json; 
                 renderLevels(); 
             } catch (error) {
-                console.error("Fetch error:", error);
-                document.getElementById('loading-msg').innerHTML = 
-                    "<span style='color:red;'>Connection Error. Make sure your Web App URL is correct and deployed as 'Anyone'.</span>";
+                document.getElementById('loading-msg').innerHTML = "<span style='color:red;'>Connection Error.</span>";
             }
         }
 
+        function showPlayerDetails(playerName) {
+            const player = DATA.players.find(p => p.name === playerName);
+            if (!player) return;
+            const comps = player.completions.map(id => {
+                const idx = DATA.levels.findIndex(l => String(l.id).trim() === String(id).trim());
+                return idx !== -1 ? { rank: idx + 1, name: DATA.levels[idx].name } : null;
+            }).filter(x => x).sort((a, b) => a.rank - b.rank);
+
+            document.getElementById('player-modal-body').innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                    ${getFlagElement(player.country)} <h2 style="margin: 0;">${player.name}</h2>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${comps.map(c => `<div style="padding:15px; border-bottom:1px solid #eee;"><b>#${c.rank}</b> — ${c.name}</div>`).join('')}
+                </div>`;
+            document.getElementById('playerModal').style.display = "block";
+            document.body.style.overflow = "hidden";
+        }
+
+        function closePlayerModal() { document.getElementById('playerModal').style.display = "none"; document.body.style.overflow = "auto"; }
         window.onload = fetchData;
     </script>
 </body>
