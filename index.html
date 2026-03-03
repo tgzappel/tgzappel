@@ -5,6 +5,47 @@
     <title>The Grandmaster Zone</title>
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Compact Tag Styling */
+        #tag-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px; /* Small gap between buttons */
+            margin-top: 10px;
+        }
+
+        .tag-btn {
+            padding: 4px 10px; /* Thinner padding */
+            font-size: 0.7rem; /* Smaller text */
+            border-radius: 4px;
+            background: #f1f1f1;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap; /* Prevents text from wrapping inside button */
+        }
+
+        .tag-btn.active-tag {
+            background: var(--accent, #6200ee);
+            color: white;
+            border-color: var(--accent, #6200ee);
+        }
+
+        /* Sidebar adjustment */
+        #sidebar h3 {
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            color: #888;
+        }
+
+        #loading-overlay {
+            text-align: center;
+            padding: 50px;
+            font-weight: 700;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
 
@@ -20,36 +61,38 @@
 
     <div id="main-layout">
         <main>
+            <div id="loading-overlay">Loading levels from the zone...</div>
             <div id="list-view"></div>
         </main>
 
         <aside id="sidebar">
             <a href="YOUR_FORM_LINK" target="_blank" class="submit-btn">Submit Record</a>
-            <h3 style="font-size:0.75rem; color:var(--text-muted); margin-bottom:15px;">FILTER SKILLS</h3>
-            <div id="tag-filters"><button class="tag-btn" onclick="toggleTag('Blues')">Blues</button>
-                <button class="tag-btn" onclick="toggleTag('Chokepoint')">Chokepoint</button>
-                <button class="tag-btn" onclick="toggleTag('Crouch Spam')">Crouch Spam</button>
+            <h3>FILTER SKILLS</h3>
+            <div id="tag-filters">
+                <button class="tag-btn" onclick="toggleTag('Blues')">Blues</button>
+                <button class="tag-btn" onclick="toggleTag('Chokepoint')">Choke</button>
+                <button class="tag-btn" onclick="toggleTag('Crouch Spam')">Crouch</button>
                 <button class="tag-btn" onclick="toggleTag('Crumble')">Crumble</button>
                 <button class="tag-btn" onclick="toggleTag('Crusher')">Crusher</button>
                 <button class="tag-btn" onclick="toggleTag('Endurance')">Endurance</button>
-                <button class="tag-btn" onclick="toggleTag('Gerald Gameplay')">Gerald Gameplay</button>
+                <button class="tag-btn" onclick="toggleTag('Gerald Gameplay')">Gerald</button>
                 <button class="tag-btn" onclick="toggleTag('Kaizo')">Kaizo</button>
                 <button class="tag-btn" onclick="toggleTag('Keydoor')">Keydoor</button>
-                <button class="tag-btn" onclick="toggleTag('Litejumps')">Litejumps</button>
+                <button class="tag-btn" onclick="toggleTag('Litejumps')">Lite</button>
                 <button class="tag-btn" onclick="toggleTag('Memory')">Memory</button>
                 <button class="tag-btn" onclick="toggleTag('Mob')">Mob</button>
-                <button class="tag-btn" onclick="toggleTag('Momentum Control')">Momentum Control</button>
-                <button class="tag-btn" onclick="toggleTag('Needle Gameplay')">Needle Gameplay</button>
+                <button class="tag-btn" onclick="toggleTag('Momentum Control')">Momentum</button>
+                <button class="tag-btn" onclick="toggleTag('Needle Gameplay')">Needle</button>
                 <button class="tag-btn" onclick="toggleTag('Precision')">Precision</button>
                 <button class="tag-btn" onclick="toggleTag('Routing')">Routing</button>
-                <button class="tag-btn" onclick="toggleTag('Sidejumps')">Sidejumps</button>
+                <button class="tag-btn" onclick="toggleTag('Sidejumps')">Side</button>
                 <button class="tag-btn" onclick="toggleTag('Speedrun')">Speedrun</button>
-                <button class="tag-btn" onclick="toggleTag('Spikedges')">Spikedges</button>
+                <button class="tag-btn" onclick="toggleTag('Spikedges')">Spike</button>
                 <button class="tag-btn" onclick="toggleTag('Strategy')">Strategy</button>
-                <button class="tag-btn" onclick="toggleTag('Technical')">Technical</button>
-                <button class="tag-btn" onclick="toggleTag('Trampoline')">Trampoline</button>
-                <button class="tag-btn" onclick="toggleTag('Walljumps')">Walljumps</button>
-                </div>
+                <button class="tag-btn" onclick="toggleTag('Technical')">Tech</button>
+                <button class="tag-btn" onclick="toggleTag('Trampoline')">Tramp</button>
+                <button class="tag-btn" onclick="toggleTag('Walljumps')">Wall</button>
+            </div>
         </aside>
     </div>
 
@@ -60,11 +103,23 @@
         </div>
     </div>
 
-    <script src="data.js"></script>
     <script>
+        // --- CONFIG ---
+        const SHEET_WEB_APP_URL = "YOUR_WEB_APP_URL_HERE"; 
+
         let activeTags = [];
 
-        function renderLevels() { filterLevels(); }
+        async function fetchData() {
+            try {
+                const response = await fetch(SHEET_WEB_APP_URL);
+                const json = await response.json();
+                window.DATA = json;
+                document.getElementById('loading-overlay').style.display = 'none';
+                filterLevels();
+            } catch (e) {
+                document.getElementById('loading-overlay').innerHTML = "Error loading data.";
+            }
+        }
 
         function toggleTag(tag) {
             event.currentTarget.classList.toggle('active-tag');
@@ -81,11 +136,10 @@
         }
 
         function filterLevels() {
-            if (!window.DATA.levels) return;
-
-            // Filtering now only checks active tags from the sidebar
+            if (!window.DATA || !DATA.levels) return;
             const filtered = DATA.levels.filter(lvl => {
-                return activeTags.length === 0 || activeTags.every(t => lvl.skills.includes(t));
+                const skills = lvl.skills ? lvl.skills.split(',').map(s => s.trim()) : [];
+                return activeTags.length === 0 || activeTags.every(t => skills.includes(t));
             });
 
             document.getElementById('list-view').innerHTML = filtered.map((lvl, i) => {
@@ -105,74 +159,52 @@
                         <div class="level-meta">by ${lvl.author}</div>
                         <div class="level-meta" style="color:var(--accent); font-weight:700;">${lvl.points}pts</div>
                     </div>
-                    <div class="level-difficulty-slot">
-                        ${diffIcon}
-                    </div>
+                    <div class="level-difficulty-slot">${diffIcon}</div>
                 </div>`;
             }).join('');
         }
 
         function showLevelDetails(id) {
             const lvl = DATA.levels.find(l => String(l.id).trim() === String(id).trim());
-            const victors = DATA.players.filter(p => p.completions.includes(id));
+            const victors = DATA.players.filter(p => p.completions && p.completions.includes(String(id)));
             const check = (val) => (val && String(val).trim() !== "") ? val : "N/A";
 
-            // Logic for the Location link
-            const locationLink = (lvl.location && lvl.location.includes('http')) 
-                ? `<a href="${lvl.location}" target="_blank" class="submit-btn" style="text-decoration:none; margin-top:10px; display:inline-block; width:auto; padding:10px 25px;">Play Level</a>`
-                : `<p style="color:var(--text-muted); font-style:italic;">Unavailable</p>`;
+            const locationBtn = (lvl.location && lvl.location.trim() !== "") 
+                ? `<a href="${lvl.location}" target="_blank" class="submit-btn" style="text-decoration:none; margin-top:10px; display:inline-block; width:auto; padding:8px 20px; background:#34c759;">Play Level</a>`
+                : `<p style="color:#999; font-style:italic; font-size:0.8rem;">No link available</p>`;
 
             document.getElementById('modal-body').innerHTML = `
-                <div style="width:100%; aspect-ratio:4/3; overflow:hidden; border-radius:15px; margin-bottom:20px; border:1px solid var(--border);">
+                <div style="width:100%; aspect-ratio:16/9; overflow:hidden; border-radius:12px; margin-bottom:15px;">
                     <img src="${lvl.img}" style="width:100%; height:100%; object-fit:cover;">
                 </div>
-                
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
                         <h2 style="margin:0;">${lvl.name}</h2>
-                        <p style="color:var(--text-muted); margin-bottom:10px;">By <strong>${lvl.author}</strong></p>
-                        ${locationLink}
+                        <p style="color:#666; margin: 5px 0;">By <strong>${lvl.author}</strong></p>
+                        ${locationBtn}
                     </div>
-                    <img src="assets/${lvl.difficulty.trim()}.png" class="diff-icon-large">
+                    <img src="assets/${lvl.difficulty.trim()}.png" style="width:50px;">
                 </div>
-                <p style="line-height:1.6; color:#444; margin-top:15px; background:#f9f9f9; padding:15px; border-radius:10px;">
-                    ${lvl.desc || "No description provided."}
-                </p>
-                <div class="stat-grid" style="margin-top:25px;">
-                    <div class="stat-box">
-                        <div class="stat-label">Enjoyment</div>
-                        <div class="stat-value" style="color:${getStatColor(lvl.enjoyment)}">${check(lvl.enjoyment)}</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-label">Quality</div>
-                        <div class="stat-value" style="color:${getStatColor(lvl.quality)}">${check(lvl.quality)}</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-label">Skill/Effort Balance</div>
-                        <div class="stat-value">${check(lvl.ratio)}</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-label">Verifier</div>
-                        <div class="stat-value">${check(lvl.verifier)}</div>
-                    </div>
+                <div class="stat-grid" style="margin-top:20px;">
+                    <div class="stat-box"><div class="stat-label">Enjoyment</div><div class="stat-value" style="color:${getStatColor(lvl.enjoyment)}">${check(lvl.enjoyment)}</div></div>
+                    <div class="stat-box"><div class="stat-label">Quality</div><div class="stat-value" style="color:${getStatColor(lvl.quality)}">${check(lvl.quality)}</div></div>
+                    <div class="stat-box"><div class="stat-label">Effort</div><div class="stat-value">${check(lvl.effort)}</div></div>
+                    <div class="stat-box"><div class="stat-label">Verifier</div><div class="stat-value">${check(lvl.verifier)}</div></div>
                 </div>
-
-                <h3 class="modal-sub-header">Skills Required</h3>
-                <div style="margin-bottom:15px;">
-                    ${lvl.skills ? lvl.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : '<span style="color:#ccc;">N/A</span>'}
-                </div>
-                
-                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-                
-                <h3 class="modal-sub-header">Victors (${victors.length})</h3>
-                <div>
-                    ${victors.length > 0 ? victors.map(v => `<span class="victor-pill">${v.name}</span>`).join('') : '<span style="color:#ccc; font-style:italic;">No victors yet.</span>'}
-                </div>`;
-                
+                <h3 style="font-size:0.9rem; margin-top:20px;">Skills</h3>
+                <div>${lvl.skills ? lvl.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : 'N/A'}</div>
+                <p style="font-size:0.9rem; color:#444; line-height:1.5;">${lvl.desc || ""}</p>
+                <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+                <h3 style="font-size:0.9rem;">Victors (${victors.length})</h3>
+                <div style="display:flex; flex-wrap:wrap; gap:5px;">${victors.map(v => `<span class="victor-pill">${v.name}</span>`).join('')}</div>`;
+            
             document.getElementById('infoModal').style.display = "block";
             document.body.style.overflow = "hidden";
         }
+
         function closeModal() { document.getElementById('infoModal').style.display = "none"; document.body.style.overflow = "auto"; }
+        
+        window.onload = fetchData;
     </script>
 </body>
 </html>
