@@ -128,6 +128,15 @@
             }
         }
 
+        // --- Restoration of Stat Coloring Logic ---
+        function getStatColor(val) {
+            const num = parseFloat(String(val).split('/')[0]);
+            if (isNaN(num)) return "#333"; // Default dark gray
+            if (num <= 45) return "#cc0000"; // Red
+            if (num <= 75) return "#e6ac00"; // Yellow/Gold
+            return "#008037"; // Dark Green
+        }
+
         function toggleTag(tag) {
             event.currentTarget.classList.toggle('active-tag');
             activeTags.includes(tag) ? activeTags = activeTags.filter(t => t !== tag) : activeTags.push(tag);
@@ -171,8 +180,8 @@
                     <img src="assets/${lvl.difficulty.trim()}.png" style="width:50px;">
                 </div>
                 <div class="stat-grid" style="margin-top:20px;">
-                    <div class="stat-box"><div class="stat-label">Enjoyment</div><div class="stat-value">${check(lvl.enjoyment)}</div></div>
-                    <div class="stat-box"><div class="stat-label">Quality</div><div class="stat-value">${check(lvl.quality)}</div></div>
+                    <div class="stat-box"><div class="stat-label">Enjoyment</div><div class="stat-value" style="color:${getStatColor(lvl.enjoyment)}">${check(lvl.enjoyment)}</div></div>
+                    <div class="stat-box"><div class="stat-label">Quality</div><div class="stat-value" style="color:${getStatColor(lvl.quality)}">${check(lvl.quality)}</div></div>
                     <div class="stat-box"><div class="stat-label">Effort</div><div class="stat-value">${check(lvl.effort)}</div></div>
                     <div class="stat-box"><div class="stat-label">Verifier</div><div class="stat-value">${check(lvl.verifier)}</div></div>
                 </div>
