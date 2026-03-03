@@ -2,10 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Leaderboard</title>
+    <title>Leaderboard | The Grandmaster Zone</title>
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Navbar Fix for Right Alignment */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px; 
+            height: 70px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: auto;
+        }
+
         .rank-purple { background-color: #f3e5f5 !important; border-color: #e1bee7 !important; }
         .rank-blue   { background-color: #e3f2fd !important; border-color: #bbdefb !important; }
         .rank-green  { background-color: #e8f5e9 !important; border-color: #c8e6c9 !important; }
@@ -57,22 +72,12 @@
 
             const list = DATA.players.map(p => {
                 let pts = 0;
-                
-                // FIX: Filter out empty strings so length is accurate
                 const validComps = p.completions.filter(id => id && String(id).trim() !== "");
-                
                 validComps.forEach(id => {
                     const l = DATA.levels.find(lvl => String(lvl.id).trim() === String(id).trim());
                     if (l) pts += parseFloat(l.points) || 0;
                 });
-                
-                return { 
-                    name: p.name, 
-                    pts: pts, 
-                    count: validComps.length,
-                    country: p.country,
-                    completions: validComps 
-                };
+                return { name: p.name, pts: pts, count: validComps.length, country: p.country, completions: validComps };
             }).sort((a, b) => b.pts - a.pts);
 
             document.getElementById('leaderboard-list').innerHTML = list.map((p, i) => {
@@ -94,7 +99,6 @@
                     <div class="level-points">${p.pts.toLocaleString()} pts</div>
                 </div>`;
             }).join('');
-
             window.CALCULATED_PLAYERS = list;
         }
 
@@ -105,14 +109,13 @@
                 window.DATA = json; 
                 renderLevels(); 
             } catch (error) {
-                document.getElementById('loading-msg').innerHTML = "<span style='color:red;'>Connection Error. Check Sheet tabs.</span>";
+                document.getElementById('loading-msg').innerHTML = "<span style='color:red;'>Connection Error.</span>";
             }
         }
 
         function showPlayerDetails(playerName) {
             const player = window.CALCULATED_PLAYERS.find(p => p.name === playerName);
             if (!player) return;
-
             const comps = player.completions.map(id => {
                 const idx = DATA.levels.findIndex(l => String(l.id).trim() === String(id).trim());
                 return idx !== -1 ? { rank: idx + 1, name: DATA.levels[idx].name } : null;
@@ -122,11 +125,9 @@
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
                     ${getFlagElement(player.country)} <h2 style="margin: 0;">${player.name}</h2>
                 </div>
-                <p style="margin-bottom: 10px;">Total Completions: <b>${player.count}</b></p>
+                <p>Total Completions: <b>${player.count}</b></p>
                 <div style="max-height: 400px; overflow-y: auto; border-top: 1px solid #eee;">
-                    ${comps.length > 0 
-                        ? comps.map(c => `<div style="padding:15px; border-bottom:1px solid #eee;"><b>#${c.rank}</b> — ${c.name}</div>`).join('')
-                        : '<div style="padding:20px; color:#999; font-style:italic;">No completions yet.</div>'}
+                    ${comps.length > 0 ? comps.map(c => `<div style="padding:15px; border-bottom:1px solid #eee;"><b>#${c.rank}</b> — ${c.name}</div>`).join('') : '<div style="padding:20px; color:#999;">No completions yet.</div>'}
                 </div>`;
             document.getElementById('playerModal').style.display = "block";
             document.body.style.overflow = "hidden";
