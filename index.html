@@ -6,6 +6,21 @@
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Navbar Fix for Right Alignment */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px; /* Adds breathing room on both sides */
+            height: 70px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            margin-left: auto; /* Pushes links to the far right */
+        }
+
         #tag-filters {
             display: flex;
             flex-wrap: wrap;
@@ -128,13 +143,12 @@
             }
         }
 
-        // --- Restoration of Stat Coloring Logic ---
         function getStatColor(val) {
             const num = parseFloat(String(val).split('/')[0]);
-            if (isNaN(num)) return "#333"; // Default dark gray
-            if (num <= 45) return "#cc0000"; // Red
-            if (num <= 75) return "#e6ac00"; // Yellow/Gold
-            return "#008037"; // Dark Green
+            if (isNaN(num)) return "#333";
+            if (num <= 45) return "#cc0000"; 
+            if (num <= 75) return "#e6ac00"; 
+            return "#008037"; 
         }
 
         function toggleTag(tag) {
