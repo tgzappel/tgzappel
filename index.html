@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>The Grandmaster Zone</title>
-    <link rel="icon" type="image/png" href="assets/favicon.jpg">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
     <style>
         #tag-filters {
@@ -12,7 +12,7 @@
             gap: 12px;
             margin-top: 15px;
         }
- 
+
         .tag-btn {
             padding: 6px 14px; 
             font-size: 0.75rem;
@@ -32,7 +32,6 @@
             border-color: var(--accent, #6200ee);
         }
 
-        /* Ensure rank number is dark for contrast */
         .level-rank {
             color: #333 !important;
             font-weight: 800;
@@ -125,8 +124,7 @@
                 document.getElementById('loading-overlay').style.display = 'none';
                 filterLevels();
             } catch (e) {
-                document.getElementById('loading-overlay').innerHTML = 
-                    "<span style='color:red;'>Connection Error. Verify Sheet tab names are 'Levels' and 'Players'.</span>";
+                document.getElementById('loading-overlay').innerHTML = "<span style='color:red;'>Connection Error.</span>";
             }
         }
 
@@ -145,7 +143,6 @@
 
             document.getElementById('list-view').innerHTML = filtered.map((lvl, i) => {
                 const diffIcon = lvl.difficulty ? `<img src="assets/${lvl.difficulty.trim()}.png" class="diff-icon-small">` : '';
-
                 return `
                 <div class="level-entry" onclick="showLevelDetails('${lvl.id}')">
                     <img class="level-thumb" src="${lvl.img}">
@@ -164,16 +161,13 @@
             const lvl = DATA.levels.find(l => String(l.id).trim() === String(id).trim());
             const victors = DATA.players.filter(p => p.completions && p.completions.includes(String(id)));
             const check = (val) => (val && String(val).trim() !== "") ? val : "N/A";
-            const locationBtn = (lvl.location && lvl.location.trim() !== "") 
-                ? `<a href="${lvl.location}" target="_blank" class="submit-btn" style="text-decoration:none; margin-top:10px; display:inline-block; width:auto; padding:8px 20px; background:#34c759;">Play Level</a>`
-                : `<p style="color:#999; font-size:0.8rem;">No link available</p>`;
-
+            
             document.getElementById('modal-body').innerHTML = `
-                <div style="width:100%; aspect-ratio:21/9; overflow:hidden; border-radius:12px; margin-bottom:15px;">
+                <div style="width:480px; height:360px; max-width:100%; margin: 0 auto 15px auto; overflow:hidden; border-radius:12px;">
                     <img src="${lvl.img}" style="width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <div><h2 style="margin:0;">${lvl.name}</h2><p>By <strong>${lvl.author}</strong></p>${locationBtn}</div>
+                    <div><h2 style="margin:0;">${lvl.name}</h2><p>By <strong>${lvl.author}</strong></p></div>
                     <img src="assets/${lvl.difficulty.trim()}.png" style="width:50px;">
                 </div>
                 <div class="stat-grid" style="margin-top:20px;">
