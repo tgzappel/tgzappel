@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>The Grandmaster Zone</title>
-    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="icon" type="image/png" href="assets/favicon.jpg">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Sidebar Tag Styling */
         #tag-filters {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px; /* Increased spacing back to original feel */
+            gap: 12px;
             margin-top: 15px;
         }
 
@@ -22,21 +21,21 @@
             border: 1px solid #ddd;
             cursor: pointer;
             transition: all 0.2s;
-            
-            /* Prevents stretching to full width */
             width: auto; 
             flex-grow: 0; 
             white-space: nowrap; 
-        }
-
-        .tag-btn:hover {
-            background: #e8e8e8;
         }
 
         .tag-btn.active-tag {
             background: var(--accent, #6200ee);
             color: white;
             border-color: var(--accent, #6200ee);
+        }
+
+        /* Ensure rank number is dark for contrast */
+        .level-rank {
+            color: #333 !important;
+            font-weight: 800;
         }
 
         #sidebar h3 {
@@ -80,28 +79,28 @@
             <h3>Filter Skills</h3>
             <div id="tag-filters">
                 <button class="tag-btn" onclick="toggleTag('Blues')">Blues</button>
-                <button class="tag-btn" onclick="toggleTag('Chokepoint')">Choke</button>
-                <button class="tag-btn" onclick="toggleTag('Crouch Spam')">Crouch</button>
+                <button class="tag-btn" onclick="toggleTag('Chokepoint')">Chokepoint</button>
+                <button class="tag-btn" onclick="toggleTag('Crouch Spam')">Crouch Spam</button>
                 <button class="tag-btn" onclick="toggleTag('Crumble')">Crumble</button>
                 <button class="tag-btn" onclick="toggleTag('Crusher')">Crusher</button>
                 <button class="tag-btn" onclick="toggleTag('Endurance')">Endurance</button>
-                <button class="tag-btn" onclick="toggleTag('Gerald Gameplay')">Gerald</button>
+                <button class="tag-btn" onclick="toggleTag('Gerald Gameplay')">Gerald Gameplay</button>
                 <button class="tag-btn" onclick="toggleTag('Kaizo')">Kaizo</button>
                 <button class="tag-btn" onclick="toggleTag('Keydoor')">Keydoor</button>
-                <button class="tag-btn" onclick="toggleTag('Litejumps')">Lite</button>
+                <button class="tag-btn" onclick="toggleTag('Litejumps')">Litejumps</button>
                 <button class="tag-btn" onclick="toggleTag('Memory')">Memory</button>
                 <button class="tag-btn" onclick="toggleTag('Mob')">Mob</button>
-                <button class="tag-btn" onclick="toggleTag('Momentum Control')">Momentum</button>
-                <button class="tag-btn" onclick="toggleTag('Needle Gameplay')">Needle</button>
+                <button class="tag-btn" onclick="toggleTag('Momentum Control')">Momentum Control</button>
+                <button class="tag-btn" onclick="toggleTag('Needle Gameplay')">Needle Gameplay</button>
                 <button class="tag-btn" onclick="toggleTag('Precision')">Precision</button>
                 <button class="tag-btn" onclick="toggleTag('Routing')">Routing</button>
-                <button class="tag-btn" onclick="toggleTag('Sidejumps')">Side</button>
+                <button class="tag-btn" onclick="toggleTag('Sidejumps')">Sidejumps</button>
                 <button class="tag-btn" onclick="toggleTag('Speedrun')">Speedrun</button>
-                <button class="tag-btn" onclick="toggleTag('Spikedges')">Spike</button>
+                <button class="tag-btn" onclick="toggleTag('Spikedges')">Spikedges</button>
                 <button class="tag-btn" onclick="toggleTag('Strategy')">Strategy</button>
-                <button class="tag-btn" onclick="toggleTag('Technical')">Tech</button>
-                <button class="tag-btn" onclick="toggleTag('Trampoline')">Tramp</button>
-                <button class="tag-btn" onclick="toggleTag('Walljumps')">Wall</button>
+                <button class="tag-btn" onclick="toggleTag('Technical')">Technical</button>
+                <button class="tag-btn" onclick="toggleTag('Trampoline')">Trampoline</button>
+                <button class="tag-btn" onclick="toggleTag('Walljumps')">Walljumps</button>
             </div>
         </aside>
     </div>
@@ -114,7 +113,6 @@
     </div>
 
     <script>
-        // --- LIVE DATA CONFIG ---
         const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw2J9pN6HUDkgrrRRgS6OiN_ejs7VJmWOgBGl8j7ZbBuVhUXtj8Y5J15YnAjRkGkzg/exec"; 
 
         let activeTags = [];
@@ -127,37 +125,15 @@
                 document.getElementById('loading-overlay').style.display = 'none';
                 filterLevels();
             } catch (e) {
-                console.error(e);
-                document.getElementById('loading-overlay').innerHTML = "<span style='color:red;'>Failed to load. Check console.</span>";
+                document.getElementById('loading-overlay').innerHTML = 
+                    "<span style='color:red;'>Connection Error. Verify Sheet tab names are 'Levels' and 'Players'.</span>";
             }
         }
 
         function toggleTag(tag) {
-            // Find which button was clicked
-            const btns = document.querySelectorAll('.tag-btn');
-            btns.forEach(b => {
-                if(b.innerText === tag || (tag === 'Choke' && b.innerText === 'Choke')) {
-                   // This handles the display logic for tags
-                }
-            });
-
-            // Target the button specifically
             event.currentTarget.classList.toggle('active-tag');
-            
-            if (activeTags.includes(tag)) {
-                activeTags = activeTags.filter(t => t !== tag);
-            } else {
-                activeTags.push(tag);
-            }
+            activeTags.includes(tag) ? activeTags = activeTags.filter(t => t !== tag) : activeTags.push(tag);
             filterLevels();
-        }
-
-        function getStatColor(val) {
-            const num = parseFloat(String(val).split('/')[0]);
-            if (isNaN(num)) return "#86868b";
-            if (num <= 45) return "#cc0000"; 
-            if (num <= 75) return "#e6ac00"; 
-            return "#00cc44";
         }
 
         function filterLevels() {
@@ -168,17 +144,12 @@
             });
 
             document.getElementById('list-view').innerHTML = filtered.map((lvl, i) => {
-                let rankText = `#${i + 1}`;
-                if (i === 0) rankText = "🥇"; 
-                if (i === 1) rankText = "🥈"; 
-                if (i === 2) rankText = "🥉";
-
                 const diffIcon = lvl.difficulty ? `<img src="assets/${lvl.difficulty.trim()}.png" class="diff-icon-small">` : '';
 
                 return `
                 <div class="level-entry" onclick="showLevelDetails('${lvl.id}')">
                     <img class="level-thumb" src="${lvl.img}">
-                    <div class="level-rank">${rankText}</div>
+                    <div class="level-rank">#${i + 1}</div>
                     <div class="level-info">
                         <div class="level-name">${lvl.name}</div>
                         <div class="level-meta">by ${lvl.author}</div>
@@ -193,33 +164,26 @@
             const lvl = DATA.levels.find(l => String(l.id).trim() === String(id).trim());
             const victors = DATA.players.filter(p => p.completions && p.completions.includes(String(id)));
             const check = (val) => (val && String(val).trim() !== "") ? val : "N/A";
-
             const locationBtn = (lvl.location && lvl.location.trim() !== "") 
                 ? `<a href="${lvl.location}" target="_blank" class="submit-btn" style="text-decoration:none; margin-top:10px; display:inline-block; width:auto; padding:8px 20px; background:#34c759;">Play Level</a>`
-                : `<p style="color:#999; font-style:italic; font-size:0.8rem;">No link available</p>`;
+                : `<p style="color:#999; font-size:0.8rem;">No link available</p>`;
 
             document.getElementById('modal-body').innerHTML = `
-                <div style="width:100%; aspect-ratio:16/9; overflow:hidden; border-radius:12px; margin-bottom:15px;">
+                <div style="width:100%; aspect-ratio:21/9; overflow:hidden; border-radius:12px; margin-bottom:15px;">
                     <img src="${lvl.img}" style="width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <div>
-                        <h2 style="margin:0;">${lvl.name}</h2>
-                        <p style="color:#666; margin: 5px 0;">By <strong>${lvl.author}</strong></p>
-                        ${locationBtn}
-                    </div>
+                    <div><h2 style="margin:0;">${lvl.name}</h2><p>By <strong>${lvl.author}</strong></p>${locationBtn}</div>
                     <img src="assets/${lvl.difficulty.trim()}.png" style="width:50px;">
                 </div>
                 <div class="stat-grid" style="margin-top:20px;">
-                    <div class="stat-box"><div class="stat-label">Enjoyment</div><div class="stat-value" style="color:${getStatColor(lvl.enjoyment)}">${check(lvl.enjoyment)}</div></div>
-                    <div class="stat-box"><div class="stat-label">Quality</div><div class="stat-value" style="color:${getStatColor(lvl.quality)}">${check(lvl.quality)}</div></div>
+                    <div class="stat-box"><div class="stat-label">Enjoyment</div><div class="stat-value">${check(lvl.enjoyment)}</div></div>
+                    <div class="stat-box"><div class="stat-label">Quality</div><div class="stat-value">${check(lvl.quality)}</div></div>
                     <div class="stat-box"><div class="stat-label">Effort</div><div class="stat-value">${check(lvl.effort)}</div></div>
                     <div class="stat-box"><div class="stat-label">Verifier</div><div class="stat-value">${check(lvl.verifier)}</div></div>
                 </div>
                 <h3 style="font-size:0.9rem; margin-top:20px;">Skills</h3>
-                <div style="display:flex; flex-wrap:wrap; gap:5px;">
-                    ${lvl.skills ? lvl.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : 'N/A'}
-                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:5px;">${lvl.skills ? lvl.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : 'N/A'}</div>
                 <p style="font-size:0.9rem; color:#444; line-height:1.5; margin-top:15px;">${lvl.desc || ""}</p>
                 <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
                 <h3 style="font-size:0.9rem;">Victors (${victors.length})</h3>
@@ -229,11 +193,7 @@
             document.body.style.overflow = "hidden";
         }
 
-        function closeModal() { 
-            document.getElementById('infoModal').style.display = "none"; 
-            document.body.style.overflow = "auto"; 
-        }
-        
+        function closeModal() { document.getElementById('infoModal').style.display = "none"; document.body.style.overflow = "auto"; }
         window.onload = fetchData;
     </script>
 </body>
