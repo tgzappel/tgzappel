@@ -37,11 +37,18 @@
             align-items: center;
         }
 
-        /* Prevent points from being hidden by background colors */
         .level-points {
             font-weight: 800;
             color: var(--text-main);
             white-space: nowrap;
+        }
+
+        /* Loading Indicator Style */
+        #loading-msg {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 50px;
         }
     </style>
 </head>
@@ -58,6 +65,7 @@
 
     <div id="container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
         <h1 style="text-align:center; font-weight: 800; margin-bottom: 30px;">Leaderboard</h1>
+        <div id="loading-msg">Fetching live records from the zone...</div>
         <div id="leaderboard-list"></div>
     </div>
 
@@ -68,19 +76,21 @@
         </div>
     </div>
 
-    <script src="data.js"></script>
     <script>
+        const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyX9F7tHA-iu6ChI5zXGcHv0aYaI7ebyDzdBlP3ess9huN9NF9zBDKnNqbDD-tJfFc/exec"; 
+
         function getFlagElement(countryCode) {
             if (!countryCode || countryCode.trim() === "" || countryCode.toLowerCase() === "n/a") {
                 return `<div class="flag-container no-flag"></div>`;
             }
             const code = countryCode.toLowerCase().trim();
-            // Using FlagCDN for high-quality flag icons
             return `<img class="flag-container" src="https://flagcdn.com/w40/${code}.png" onerror="this.outerHTML='<div class=\'flag-container no-flag\'></div>'">`;
         }
 
         function renderLevels() {
             if (!window.DATA || !window.DATA.players) return;
+            
+            document.getElementById('loading-msg').style.display = 'none';
 
             const list = DATA.players.map(p => {
                 let pts = 0;
@@ -101,7 +111,6 @@
                 let rankLabel = `#${rankNum}`;
                 let colorClass = "rank-gray";
 
-                // Rank Color Logic
                 if (rankNum <= 3) {
                     colorClass = "rank-purple";
                     if (rankNum === 1) rankLabel = "🥇";
@@ -164,7 +173,21 @@
             document.body.style.overflow = "auto"; 
         }
 
-        window.onload = renderLevels;
+        // --- FETCH LOGIC ---
+        async function fetchData() {
+            try {
+                const response = await fetch(SHEET_WEB_APP_URL);
+                const json = await response.json();
+                window.DATA = json; 
+                renderLevels(); 
+            } catch (error) {
+                console.error("Fetch error:", error);
+                document.getElementById('loading-msg').innerHTML = 
+                    "<span style='color:red;'>Connection Error. Make sure your Web App URL is correct and deployed as 'Anyone'.</span>";
+            }
+        }
+
+        window.onload = fetchData;
     </script>
 </body>
 </html>
