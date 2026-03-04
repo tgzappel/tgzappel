@@ -193,6 +193,7 @@
                     <div><h2 style="margin:0;">${lvl.name}</h2><p>By <strong>${lvl.author}</strong></p></div>
                     <img src="assets/${lvl.difficulty.trim()}.png" style="width:50px;">
                 </div>
+                <p style="font-size:0.9rem; color:#444; line-height:1.5; margin-top:15px;">${lvl.desc || ""}</p>
                 <div class="stat-grid" style="margin-top:20px;">
                     <div class="stat-box"><div class="stat-label">Enjoyment</div><div class="stat-value" style="color:${getStatColor(lvl.enjoyment)}">${check(lvl.enjoyment)}</div></div>
                     <div class="stat-box"><div class="stat-label">Quality</div><div class="stat-value" style="color:${getStatColor(lvl.quality)}">${check(lvl.quality)}</div></div>
@@ -201,7 +202,6 @@
                 </div>
                 <h3 style="font-size:0.9rem; margin-top:20px;">Skills</h3>
                 <div style="display:flex; flex-wrap:wrap; gap:5px;">${lvl.skills ? lvl.skills.split(',').map(s => `<span class="skill-tag">${s.trim()}</span>`).join('') : 'N/A'}</div>
-                <p style="font-size:0.9rem; color:#444; line-height:1.5; margin-top:15px;">${lvl.desc || ""}</p>
                 <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
                 <h3 style="font-size:0.9rem;">Victors (${victors.length})</h3>
                 <div style="display:flex; flex-wrap:wrap; gap:5px;">${victors.map(v => `<span class="victor-pill">${v.name}</span>`).join('')}</div>`;
