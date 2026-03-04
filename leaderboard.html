@@ -6,7 +6,6 @@
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Navbar Alignment */
         nav {
             display: flex;
             justify-content: space-between;
@@ -21,7 +20,6 @@
             margin-left: auto; 
         }
 
-        /* Rank Colors */
         .rank-purple { background-color: #f3e5f5 !important; border-color: #e1bee7 !important; }
         .rank-blue   { background-color: #e3f2fd !important; border-color: #bbdefb !important; }
         .rank-green  { background-color: #e8f5e9 !important; border-color: #c8e6c9 !important; }
@@ -99,7 +97,6 @@
 
             const playerList = DATA.players.map(p => {
                 let totalPts = 0;
-                // Filter out empty spaces and ensure IDs are strings
                 const validComps = (p.completions || []).filter(id => id && String(id).trim() !== "");
                 
                 validComps.forEach(id => {
